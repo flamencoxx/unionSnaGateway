@@ -21,6 +21,7 @@
             using-nio="true"
             so-traffic-class="16"
             deserializer="unionServerSerializer"
+            serializer="unionServerSerializer"
             single-use="false" so-linger="60"
             so-keep-alive="true"/>
 

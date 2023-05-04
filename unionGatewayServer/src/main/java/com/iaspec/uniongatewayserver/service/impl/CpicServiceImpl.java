@@ -1,6 +1,7 @@
 package com.iaspec.uniongatewayserver.service.impl;
 
 import COM.ibm.eNetwork.cpic.*;
+import com.google.common.collect.Lists;
 import com.iaspec.uniongatewayserver.constant.GatewayConstant;
 import com.iaspec.uniongatewayserver.exception.ServiceException;
 import com.iaspec.uniongatewayserver.model.AcceptResult;
@@ -19,11 +20,14 @@ import org.springframework.messaging.MessageChannel;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
+import java.lang.reflect.Method;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Function;
 
 /**
  * @author Flamenco.xxx
@@ -186,32 +190,21 @@ public class CpicServiceImpl implements CpicService {
                 throw new ServiceException("500", "return code is not right", ServiceException.LogLevel.ERROR);
             }
 
-//            发送消息到channel
-//            MessageChannel channel;
-//            String channelName = StringUtils.EMPTY;
-//            if (StringUtils.isNotBlank(GatewayConstant.getIpConnectionId())) {
-//                Map.Entry<String, MessageChannel> channelMap = GatewayConstant.GATEWAY_TO_JETCO_CHANNEL.choice();
-//                channel = channelMap.getValue();
-//                channelName = channelMap.getKey();
-//                channel = Optional.ofNullable(channel)
-//                        .orElse(applicationContext.getBean(MAINFRAME_RETURN_CHANNEL, MessageChannel.class));
-//            } else {
-//                channel = applicationContext.getBean(MAINFRAME_RETURN_CHANNEL, MessageChannel.class);
-//            }
-//            if (channelName.equals(JETCO_OUTBOUND_CHANNEL)) {
-//                serverSend2jetco(acceptResult.getData(), channel, GatewayConstant.getIpConnectionId());
-//            } else {
-//                clientSend2Jetco(acceptResult.getData(), channel);
-//            }
 
-//            发送消息给UMPS
-            boolean isSend = clientSend2UMPS(acceptResult.getData(), GatewayConstant.CLIENT_OUTBOUND_CHANNEL);
-            TcpConnectionSupport connection = GatewayConstant.CLIENT_FACTORY.getConnection();
-
+            boolean isSend = false;
+            if(GatewayConstant.isDuplex.get() && GatewayConstant.SERVER_OUTBOUND_CHANNEL_ADAPTER != null){
+                ListBalance<Function<byte[], Boolean>> sendFuncs = new ListBalance<>(Lists.newArrayList(this::server2UMPS, this::client2UMPS));
+//                isSend = sendFuncs.choice().apply(acceptResult.getData());
+//                isSend = server2UMPS(acceptResult.getData());
+                isSend = clientSend2UMPS(acceptResult.getData(), GatewayConstant.CLIENT_OUTBOUND_CHANNEL);
+            }else {
+                isSend = clientSend2UMPS(acceptResult.getData(), GatewayConstant.CLIENT_OUTBOUND_CHANNEL);
+            }
 
             if (isSend){
                 RecordUtil.Gateway2UmpsRecord();
             }
+
         } finally {
             SystemLogger.debugMethod(getClass(), "sendMsg2Union", false, new String[]{""});
         }
@@ -256,19 +249,37 @@ public class CpicServiceImpl implements CpicService {
         return channel.send(message);
     }
 
-    public static void serverAdapterSend2UMPS(byte[] data, String connectionId){
-        Message<byte[]> message = MessageBuilder.withPayload(data)
-                .setHeader(IpHeaders.CONNECTION_ID, connectionId)
-                .build();
-        GatewayConstant.SERVER_OUTBOUND_CHANNEL_ADAPTER.handleMessage(message);
-    }
-
     public static boolean clientSend2UMPS(byte[] data, MessageChannel channel) throws Exception {
         InetAddress addr = InetAddress.getLocalHost();
         Message<byte[]> message = MessageBuilder.withPayload(data)
                 .setHeader(IpHeaders.IP_ADDRESS, addr)
                 .build();
         return channel.send(message);
+    }
+
+    public boolean server2UMPS(byte[] data){
+        Message<byte[]> message = MessageBuilder.withPayload(data)
+                .setHeader(IpHeaders.CONNECTION_ID, GatewayConstant.IP_CONNECTION_ID.get())
+                .build();
+        GatewayConstant.SERVER_OUTBOUND_CHANNEL_ADAPTER.handleMessage(message);
+        return true;
+    }
+
+    public boolean client2UMPS(byte[] data){
+        InetAddress addr;
+        Message<byte[]> message = null;
+        try {
+            addr = InetAddress.getLocalHost();
+            message = MessageBuilder.withPayload(data)
+                    .setHeader(IpHeaders.IP_ADDRESS, addr)
+                    .build();
+        } catch (Throwable e) {
+            SystemLogger.error("Occur a error when client send msg to UMPS");
+        }
+        if (message == null){
+            return false;
+        }
+        return GatewayConstant.CLIENT_OUTBOUND_CHANNEL.send(message);
     }
 
 

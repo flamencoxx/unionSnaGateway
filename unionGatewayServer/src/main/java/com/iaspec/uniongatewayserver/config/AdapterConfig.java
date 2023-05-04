@@ -26,8 +26,8 @@ public class AdapterConfig {
 
     @Bean(name = "unionClientInboundAdapter")
     @Conditional(IsDuplexMode.class)
-    @DependsOn(GatewayConstant.CLIENT_FACTORY_NAME)
-    @Order(2)
+    @DependsOn({GatewayConstant.CLIENT_FACTORY_NAME,"unionClientInboundChannel"})
+    @Order(3)
     public TcpReceivingChannelAdapter unionClientInboundAdapter() {
         TcpReceivingChannelAdapter adapter = new TcpReceivingChannelAdapter();
         TcpNetClientConnectionFactory factory = applicationContext.getBean(GatewayConstant.CLIENT_FACTORY_NAME, TcpNetClientConnectionFactory.class);
@@ -38,11 +38,10 @@ public class AdapterConfig {
         return adapter;
     }
 
-
     @Bean(name = "unionServerOutboundAdapter")
     @Conditional(IsDuplexMode.class)
     @DependsOn(GatewayConstant.SERVER_FACTORY_NAME)
-    @Order(2)
+    @Order(3)
     public TcpSendingMessageHandler unionServerOutboundAdapter(){
         TcpSendingMessageHandler adapter = new TcpSendingMessageHandler();
         TcpNioServerConnectionFactory factory = applicationContext.getBean(GatewayConstant.SERVER_FACTORY_NAME, TcpNioServerConnectionFactory.class);
@@ -51,13 +50,12 @@ public class AdapterConfig {
         return adapter;
     }
 
-
     static class IsDuplexMode implements Condition {
 
         @Override
         public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
             return Boolean.TRUE.equals(context.getEnvironment()
-                    .getProperty("isDuplex", Boolean.class));
+                    .getProperty(GatewayConstant.PROP_KEY_IS_DUPLEX, Boolean.class));
         }
     }
 }

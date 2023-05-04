@@ -2,10 +2,16 @@ package com.iaspec.uniongatewayserver.controller;
 
 import com.iaspec.uniongatewayserver.constant.GatewayConstant;
 import com.iaspec.uniongatewayserver.model.GatewayInfo;
+import com.iaspec.uniongatewayserver.util.CpicUtil;
 import org.springframework.http.ResponseEntity;
+import org.springframework.integration.ip.IpHeaders;
+import org.springframework.integration.support.MessageBuilder;
+import org.springframework.messaging.Message;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author Flamenco.xxx
@@ -34,5 +40,15 @@ public class GatewayController {
         boolean running = GatewayConstant.CLIENT_INBOUND_CHANNEL_ADAPTER.isRunning();
         boolean running1 = GatewayConstant.SERVER_OUTBOUND_CHANNEL_ADAPTER.isRunning();
         return ResponseEntity.ok(new GatewayInfo());
+    }
+
+    @RequestMapping(value = "/serverAdapterSend" ,method = RequestMethod.POST)
+    public void send2UMPSTest(){
+        String str = "flamencoTest";
+        byte[] data = CpicUtil.convertToEbc(str.getBytes(StandardCharsets.US_ASCII), str.getBytes(StandardCharsets.US_ASCII).length);
+        Message<byte[]> message = MessageBuilder.withPayload(data)
+                .setHeader(IpHeaders.CONNECTION_ID, GatewayConstant.IP_CONNECTION_ID.get())
+                .build();
+        GatewayConstant.SERVER_OUTBOUND_CHANNEL_ADAPTER.handleMessage(message);
     }
 }
