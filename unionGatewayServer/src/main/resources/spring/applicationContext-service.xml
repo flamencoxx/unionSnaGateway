@@ -1,0 +1,48 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:int="http://www.springframework.org/schema/integration"
+       xmlns:int-ip="http://www.springframework.org/schema/integration/ip"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:int-event="http://www.springframework.org/schema/integration/event"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/integration/ip http://www.springframework.org/schema/integration/ip/spring-integration-ip.xsd
+		http://www.springframework.org/schema/integration/event http://www.springframework.org/schema/integration/event/spring-integration-event.xsd">
+
+
+
+    <bean id="gatewayPropertyStore"
+          class="com.iaspec.uniongatewayserver.util.PropertyStore" init-method="init">
+        <property name="fileName" value="${gateway.properties.path}"/>
+    </bean>
+
+    <bean id="springPropertyStore"
+          class="com.iaspec.uniongatewayserver.util.PropertyStore" init-method="init">
+        <property name="fileName" value="${spring.config.location}"/>
+    </bean>
+
+    <bean id="propertyService"
+          class="com.iaspec.uniongatewayserver.service.impl.PropertyServiceImpl"
+          init-method="init"/>
+
+    <bean id="cpicService"
+          class="com.iaspec.uniongatewayserver.service.impl.CpicServiceImpl"/>
+
+    <bean id="gatewayService"
+          class="com.iaspec.uniongatewayserver.service.impl.GatewayServiceImpl"/>
+
+
+    <bean id="propertyStores" class="java.util.ArrayList">
+        <constructor-arg>
+            <list>
+                <ref bean="gatewayPropertyStore"/>
+                <ref bean="springPropertyStore"/>
+            </list>
+        </constructor-arg>
+    </bean>
+
+
+</beans>

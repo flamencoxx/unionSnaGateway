@@ -1,0 +1,80 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:int="http://www.springframework.org/schema/integration"
+       xmlns:int-ip="http://www.springframework.org/schema/integration/ip"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:int-event="http://www.springframework.org/schema/integration/event"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/integration/ip http://www.springframework.org/schema/integration/ip/spring-integration-ip.xsd
+		http://www.springframework.org/schema/integration/event http://www.springframework.org/schema/integration/event/spring-integration-event.xsd http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
+
+
+
+
+
+    <bean id="unionTcpNetClientConnectionSupport"
+          class="com.iaspec.uniongatewayserver.config.UnionTcpNetClientConnectionSupport"/>
+
+    <bean id="unionClientFactory"
+          class="com.iaspec.uniongatewayserver.config.UnionTcpNetClientConnectionFactory">
+        <constructor-arg name="host" value="${client.remote.host}"/>
+        <constructor-arg name="port" value="${client.remote.port}"/>
+        <property name="host" value="${client.remote.host}"/>
+        <property name="port" value="${client.remote.port}"/>
+        <property name="serializer" ref="unionClientSerializer"/>
+        <property name="deserializer" ref="unionClientSerializer"/>
+        <property name="singleUse" value="false"/>
+        <property name="soLinger" value="10000"/>
+        <property name="soKeepAlive" value="true"/>
+    </bean>
+
+
+
+    <int-ip:tcp-outbound-channel-adapter
+            id="unionClientOutboundAdapter"
+            channel="unionClientOutboundChannel"
+            client-mode="false"
+            connection-factory="unionClientFactory"/>
+
+
+    <int:channel id="unionClientOutboundChannel">
+        <int:queue capacity="1000"/>
+    </int:channel>
+
+    <task:executor id="clientExecutor" pool-size="0-4" rejection-policy="CALLER_RUNS"/>
+
+
+
+    <int-ip:tcp-inbound-channel-adapter
+            id="unionClientInboundAdapter"
+            channel="unionClientInboundChannel"
+            client-mode="false"
+            auto-startup="false"
+            error-channel="errorChannel"
+            connection-factory="unionClientFactory"/>
+
+    <int:channel id="unionClientInboundChannel">
+        <int:queue capacity="1000"/>
+    </int:channel>
+
+    <int:service-activator
+            input-channel="unionClientInboundChannel"
+            ref="unionServerMessageHandle"
+            order="2"
+            method="handleServerMessage">
+        <int:poller receive-timeout="1000" task-executor="clientExecutor" max-messages-per-poll="1" fixed-rate="20"/>
+    </int:service-activator>
+
+
+    <bean id="unionClientSerializer"
+          class="com.iaspec.uniongatewayserver.serializer.UnionClientSerializer">
+        <constructor-arg name="maxMessageSize"
+                         value="${spring.serializer.maxMessageSize}"/>
+    </bean>
+
+</beans>

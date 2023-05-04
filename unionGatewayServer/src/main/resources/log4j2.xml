@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--日志级别以及优先级排序: OFF > FATAL > ERROR > WARN > INFO > DEBUG > TRACE > ALL -->
+<!--Configuration后面的status，这个用于设置log4j2自身内部的信息输出，可以不设置，当设置成trace时，你会看到log4j2内部各种详细输出-->
+<!--monitorInterval：Log4j能够自动检测修改配置 文件和重新配置本身，设置间隔秒数-->
+
+<Configuration status="WARN" monitorInterval="180"
+               xmlns:context="http://www.springframework.org/schema/context">
+
+    <context:property-placeholder />
+    <!--properties:设置全局变量 -->
+    <properties>
+
+        <property name="APP_NAME">union-gateway</property>
+        <!--LOG_HOME:指定当前日志存放的目录 -->
+        <property name="LOG_HOME">${sys:log.dir}</property>
+        <!--设置日志输出格式:日期,线程名,日志级别,MDC ID,日志名称,日志信息,换行-->
+        <Property name="PATTERN_FORMAT">%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36}#%M:%L - %msg%n</Property>
+        <!--日志保存时间 -->
+        <property name="LOG_SAVE_TIME">30D</property>
+        <!--日志文件大小 -->
+        <property name="LOG_SIZE">500MB</property>
+        <!--日志文件名 -->
+        <property name="MAIN_LOG_NAME">main</property>
+        <property name="INFO_LOG_NAME">union-sna-gw</property>
+        <property name="WARN_LOG_NAME">warn</property>
+        <property name="ERROR_LOG_NAME">union-sna-gw</property>
+    </properties>
+
+    <!--Appenders:定义日志输出目的地，内容和格式等 -->
+    <Appenders>
+        <!--Console:日志输出到控制台标准输出 -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${PATTERN_FORMAT}"/>
+        </Console>
+
+        <!--RollingFile:日志输出到文件,下面的文件都使用相对路径 -->
+        <!--fileName:当前日志输出的文件名称 -->
+        <!--filePattern:备份日志文件名称，备份目录为logs下面以年月命名的目录，备份时使用gz格式压缩 -->
+        <RollingFile name="RollingFileAll" fileName="${LOG_HOME}/${INFO_LOG_NAME}.log"
+                     filePattern="${LOG_HOME}/$${date:yyyy-MM}/${INFO_LOG_NAME}-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="${PATTERN_FORMAT}"/>
+            <!--控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch）-->
+            <ThresholdFilter level="debug" onMatch="ACCEPT"/>
+            <!--Policies:触发策略决定何时执行备份 -->
+            <Policies>
+                <!--TimeBasedTriggeringPolicy:日志文件按照时间备份 -->
+                <!--interval:每1天生成一个新文件，时间单位需要结合filePattern时间%d{yyyy-MM-dd} -->
+                <!--同理，如果要每1小时生成一个新文件，则改成%d{yyyy-MM-ddHH} -->
+                <!--modulate:对备份日志的生成时间纠偏，纠偏以0为基准进行，"0+interval"决定启动后第一次备份时间 -->
+                <!-- TimeBasedTriggeringPolicy:Policies子节点，基于时间的滚动策略，interval属性用来指定多久滚动一次，默认是1 hour。modulate=true用来调整时间：比如现在是早上3am，interval是4，那么第一次滚动是在4am，接着是8am，12am...而不是7am. -->
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <!--SizeBasedTriggeringPolicy:日志文件按照大小备份 -->
+                <!--size:指定日志文件最大为${LOG_SIZE}，单位可以为KB、MB或GB -->
+                <!--<SizeBasedTriggeringPolicy size="${LOG_SIZE}"/>-->
+            </Policies>
+            <!--DefaultRolloverStrategy:翻转策略决定如何执行备份 -->
+            <!--max:最多保存5个备份文件，结合时间使用后，在每个时间段内最多有5个备份，多出来的会被覆盖 -->
+            <!--compressionLevel:配置日志压缩级别，范围0-9，0不压缩，1压缩速度最快，9压缩率最好，目前只对于zip压缩文件类型有效 -->
+            <DefaultRolloverStrategy max="5" compressionLevel="1">
+                <!--Delete:删除匹配到的过期备份文件 -->
+                <!--maxDepth:由于备份文件保存在${LOG_HOME}/$${date:yyyy-MM},所以目录深度设置为2 -->
+                <Delete basePath="${LOG_HOME}" maxDepth="2">
+                    <!--IfFileName:匹配文件名称 -->
+                    <!--glob:匹配2级目录深度下的以.log.gz结尾的备份文件 -->
+                    <IfFileName glob="*/*.log.gz"/>
+                    <!--IfLastModified:匹配文件修改时间 -->
+                    <!--age:匹配超过${LOG_SAVE_TIME}的文件，单位D、H、M、S分别表示天、小时、分钟、秒-->
+                    <IfLastModified age="${LOG_SAVE_TIME}"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+        
+<!--        <RollingFile name="RollingFileWarn" fileName="${LOG_HOME}/${WARN_LOG_NAME}.log"-->
+<!--                     filePattern="${LOG_HOME}/$${date:yyyy-MM}/${WARN_LOG_NAME}-%d{yyyy-MM-dd}-%i.log.gz">-->
+<!--            <PatternLayout pattern="${PATTERN_FORMAT}"/>-->
+<!--            <ThresholdFilter level="warn" onMatch="ACCEPT" onMismatch="DENY"/>-->
+<!--            <Policies>-->
+<!--                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>-->
+<!--            </Policies>-->
+<!--            <DefaultRolloverStrategy max="5" compressionLevel="1">-->
+<!--                <Delete basePath="${LOG_HOME}" maxDepth="2">-->
+<!--                    <IfFileName glob="*/*.log.gz"/>-->
+<!--                    <IfLastModified age="${LOG_SAVE_TIME}"/>-->
+<!--                </Delete>-->
+<!--            </DefaultRolloverStrategy>-->
+<!--        </RollingFile>  -->
+        
+        <RollingFile name="RollingFileError" fileName="${LOG_HOME}/${ERROR_LOG_NAME}.err"
+                     filePattern="${LOG_HOME}/$${date:yyyy-MM}/${ERROR_LOG_NAME}-%d{yyyy-MM-dd}-%i.err.gz">
+            <PatternLayout pattern="${PATTERN_FORMAT}"/>
+            <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+            <DefaultRolloverStrategy max="5" compressionLevel="1">
+                <Delete basePath="${LOG_HOME}" maxDepth="2">
+                    <IfFileName glob="*/*.log.gz"/>
+                    <IfLastModified age="${LOG_SAVE_TIME}"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>               
+    </Appenders>
+
+    <Loggers>
+        <!--Root:日志默认打印到控制台 -->
+        <!--level日志级别: ALL < TRACE < DEBUG < INFO < WARN < ERROR < FATAL < OFF -->
+        <Root level="INFO">
+            <appenderRef ref="Console"/>
+            <appender-ref ref="RollingFileAll"/>
+            <appender-ref ref="RollingFileWarn"/>
+            <appender-ref ref="RollingFileError"/>            
+        </Root>
+    </Loggers>
+</Configuration>

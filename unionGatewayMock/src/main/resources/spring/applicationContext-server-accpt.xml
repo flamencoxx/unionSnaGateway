@@ -1,0 +1,116 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:int="http://www.springframework.org/schema/integration"
+       xmlns:int-ip="http://www.springframework.org/schema/integration/ip"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:int-event="http://www.springframework.org/schema/integration/event"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/integration/ip http://www.springframework.org/schema/integration/ip/spring-integration-ip.xsd
+		http://www.springframework.org/schema/integration/event http://www.springframework.org/schema/integration/event/spring-integration-event.xsd http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
+
+    <context:property-placeholder />
+
+    <bean id="unionMockServerHandler"
+          class="com.iaspec.uniongatewaymock.unionGateway.server.UnionMockServerHandler"/>
+
+    <int-ip:tcp-connection-factory
+            id="unionMockServerFactory"
+            using-nio="true"
+            type="server"
+            port="${mock.server.port}"
+            serializer="byteArraySerializer1"
+            deserializer="byteArraySerializer1"
+            single-use="false" so-linger="10000"
+            so-keep-alive="true"/>
+
+    <bean id="byteArraySerializer1"
+          class="com.iaspec.uniongatewaymock.serializer.ByteArraySerializer">
+        <constructor-arg index="0"
+                         value="${spring.serializer.maxMessageSize}" />
+    </bean>
+
+    <int-ip:tcp-inbound-channel-adapter
+            id="inboundChannel"
+            client-mode="false"
+            channel="unionInboundChannel"
+            connection-factory="unionMockServerFactory"/>
+
+    <int-ip:tcp-outbound-channel-adapter
+            id="outboundChannel"
+            client-mode="false"
+            channel="unionOutboundChannel"
+            connection-factory="unionMockServerFactory">
+<!--        <int:poller receive-timeout="100" task-executor="taskExecutor2" max-messages-per-poll="100" fixed-rate="100"/>-->
+    </int-ip:tcp-outbound-channel-adapter>
+
+    <task:executor id="taskExecutor2" pool-size="4" rejection-policy="CALLER_RUNS"/>
+
+    <int:channel id="unionInboundChannel">
+<!--        <int:queue capacity="1000"/>-->
+    </int:channel>
+
+    <int:channel id="unionOutboundChannel">
+        <int:queue capacity="10000"/>
+    </int:channel>
+
+    <int:service-activator
+            input-channel="unionInboundChannel"
+            ref="unionMockServerHandler"
+            method="handleMessage">
+<!--        <int:poller receive-timeout="1000" task-executor="taskExecutor2" max-messages-per-poll="1" fixed-rate="20"/>-->
+    </int:service-activator>
+
+</beans>
+
+
+
+
+        <!--<beans xmlns="http://www.springframework.org/schema/beans"-->
+        <!--       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"-->
+        <!--       xmlns:int="http://www.springframework.org/schema/integration"-->
+        <!--       xmlns:int-ip="http://www.springframework.org/schema/integration/ip"-->
+        <!--       xmlns:context="http://www.springframework.org/schema/context"-->
+        <!--       xmlns:mvc="http://www.springframework.org/schema/mvc"-->
+        <!--       xmlns:int-event="http://www.springframework.org/schema/integration/event"-->
+        <!--       xmlns:task="http://www.springframework.org/schema/task"-->
+        <!--       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd-->
+        <!--		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd-->
+        <!--		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd-->
+        <!--		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd-->
+        <!--		http://www.springframework.org/schema/integration/ip http://www.springframework.org/schema/integration/ip/spring-integration-ip.xsd-->
+        <!--		http://www.springframework.org/schema/integration/event http://www.springframework.org/schema/integration/event/spring-integration-event.xsd http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">-->
+
+        <!--    <context:property-placeholder />-->
+
+        <!--    <int-ip:tcp-connection-factory-->
+        <!--            id="unionMockServerFactory"-->
+        <!--            type="server"-->
+        <!--            port="${mock.server.port}"-->
+        <!--            serializer="byteClientArraySerializer"-->
+        <!--            deserializer="byteArraySerializer"-->
+        <!--            single-use="false" so-linger="10000"-->
+        <!--            so-keep-alive="true"/>-->
+
+        <!--    <int-ip:tcp-inbound-channel-adapter-->
+        <!--            id="inboundChannelAdapter"-->
+        <!--            client-mode="false"-->
+        <!--            channel="unionInboundChannel"-->
+        <!--            connection-factory="unionMockServerFactory"/>-->
+
+        <!--    <int:channel id="unionInboundChannel"/>-->
+
+        <!--    <int:service-activator-->
+        <!--            input-channel="unionInboundChannel"-->
+        <!--            ref="unionMockServerHandler"-->
+        <!--            method="handleMessage"/>-->
+
+        <!--    <bean id="unionMockServerHandler"-->
+        <!--          class="com.iaspec.uniongatewaymock.unionGateway.server.UnionMockServerHandler"/>-->
+
+
+        <!--</beans>-->

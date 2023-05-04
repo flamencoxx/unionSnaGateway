@@ -1,0 +1,101 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:int="http://www.springframework.org/schema/integration"
+       xmlns:int-ip="http://www.springframework.org/schema/integration/ip"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:int-event="http://www.springframework.org/schema/integration/event"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/integration/ip http://www.springframework.org/schema/integration/ip/spring-integration-ip.xsd
+		http://www.springframework.org/schema/integration/event http://www.springframework.org/schema/integration/event/spring-integration-event.xsd http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
+
+
+    <int-ip:tcp-connection-factory
+            id="unionServerFactory"
+            type="server"
+            port="${gateway.server.port}"
+            using-nio="true"
+            so-traffic-class="16"
+            deserializer="unionServerSerializer"
+            single-use="false" so-linger="60"
+            so-keep-alive="true"/>
+
+    <int:service-activator
+            input-channel="unionServerInboundChannel"
+            ref="unionServerMessageHandle"
+            order="2"
+            method="handleServerMessage">
+
+        <int:poller receive-timeout="1000" task-executor="serverExecutor" max-messages-per-poll="1" fixed-rate="20"/>
+    </int:service-activator>
+
+    <int:channel id="unionServerInboundChannel">
+        <int:queue capacity="1000"/>
+    </int:channel>
+
+    <int:channel id="unionServerOutboundChannel">
+        <int:queue capacity="1000"/>
+    </int:channel>
+
+    <int-ip:tcp-inbound-channel-adapter
+            id="unionServerInboundAdapter"
+            client-mode="false"
+            channel="unionServerInboundChannel"
+            error-channel="errorChannel"
+            connection-factory="unionServerFactory"/>
+
+    <int-ip:tcp-outbound-channel-adapter
+            id="unionServerOutboundAdapter"
+            channel="unionServerOutboundChannel"
+            client-mode="false"
+            auto-startup="false"
+            connection-factory="unionServerFactory"/>
+
+
+    <bean id="unionServerMessageHandle"
+          class="com.iaspec.uniongatewayserver.UnionServer.UnionServerMessageHandle"/>
+
+<!--    error-->
+
+    <int:channel id="errorChannel"/>
+
+    <int:service-activator
+            input-channel="errorChannel"
+            ref="errorHandle"
+            method="errorHandle">
+    </int:service-activator>
+
+    <bean id="errorHandle"
+          class="com.iaspec.uniongatewayserver.UnionServer.ErrorHandler"/>
+
+
+
+
+    <bean id="unionServerSerializer" class="com.iaspec.uniongatewayserver.serializer.UnionServerSerializer">
+        <constructor-arg name="maxMessageSize"
+                         value="${spring.serializer.maxMessageSize}"/>
+    </bean>
+
+    <task:executor id="serverExecutor" pool-size="0-4" rejection-policy="CALLER_RUNS"/>
+
+
+    <!--    event-->
+    <int:channel id="UnionEventChannel"/>
+
+    <bean id="unionEventHandler"
+          class="com.iaspec.uniongatewayserver.event.UnionEventHandler"/>
+
+    <int-event:inbound-channel-adapter
+            channel="UnionEventChannel"
+            event-types="org.springframework.integration.ip.tcp.connection.TcpConnectionEvent"/>
+
+    <int:service-activator
+            input-channel="UnionEventChannel"
+            ref="unionEventHandler"
+            method="handleEvent"/>
+
+</beans>
