@@ -33,8 +33,6 @@ public class GatewayController {
     public ResponseEntity<GatewayInfo> getAdapterInfo(){
         boolean running = GatewayConstant.CLIENT_INBOUND_CHANNEL_ADAPTER.isRunning();
         boolean running1 = GatewayConstant.SERVER_OUTBOUND_CHANNEL_ADAPTER.isRunning();
-        boolean active = GatewayConstant.CLIENT_INBOUND_CHANNEL_ADAPTER.isActive();
-        boolean active1 = GatewayConstant.SERVER_OUTBOUND_CHANNEL_ADAPTER.isActive();
         return ResponseEntity.ok(new GatewayInfo());
     }
 }

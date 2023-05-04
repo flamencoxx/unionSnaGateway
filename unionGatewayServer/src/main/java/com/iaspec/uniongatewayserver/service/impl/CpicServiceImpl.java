@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.integration.ip.IpHeaders;
+import org.springframework.integration.ip.tcp.TcpSendingMessageHandler;
 import org.springframework.integration.ip.tcp.connection.TcpConnectionSupport;
 import org.springframework.integration.support.MessageBuilder;
 import org.springframework.messaging.Message;
@@ -206,7 +207,6 @@ public class CpicServiceImpl implements CpicService {
 //            发送消息给UMPS
             boolean isSend = clientSend2UMPS(acceptResult.getData(), GatewayConstant.CLIENT_OUTBOUND_CHANNEL);
             TcpConnectionSupport connection = GatewayConstant.CLIENT_FACTORY.getConnection();
-//            boolean isSend = serverSend2UMPS(acceptResult.getData(), GatewayConstant.CLIENT_OUTBOUND_CHANNEL, GatewayConstant.IP_CONNECTION_ID.get());
 
 
             if (isSend){
@@ -254,6 +254,13 @@ public class CpicServiceImpl implements CpicService {
                 .setHeader(IpHeaders.CONNECTION_ID, connectionId)
                 .build();
         return channel.send(message);
+    }
+
+    public static void serverAdapterSend2UMPS(byte[] data, String connectionId){
+        Message<byte[]> message = MessageBuilder.withPayload(data)
+                .setHeader(IpHeaders.CONNECTION_ID, connectionId)
+                .build();
+        GatewayConstant.SERVER_OUTBOUND_CHANNEL_ADAPTER.handleMessage(message);
     }
 
     public static boolean clientSend2UMPS(byte[] data, MessageChannel channel) throws Exception {

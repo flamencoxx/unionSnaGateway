@@ -50,13 +50,23 @@
 
 
 
-    <int-ip:tcp-inbound-channel-adapter
-            id="unionClientInboundAdapter"
-            channel="unionClientInboundChannel"
-            client-mode="false"
-            auto-startup="false"
-            error-channel="errorChannel"
-            connection-factory="unionClientFactory"/>
+<!--    <int-ip:tcp-inbound-channel-adapter-->
+<!--            id="unionClientInboundAdapter"-->
+<!--            channel="unionClientInboundChannel"-->
+<!--            client-mode="false"-->
+<!--            auto-startup="false"-->
+<!--            error-channel="errorChannel"-->
+<!--            connection-factory="unionClientFactory"/>-->
+
+<!--    <bean id="unionClientInboundAdapter"-->
+<!--          class="org.springframework.integration.ip.tcp.TcpReceivingChannelAdapter" >-->
+<!--        <property name="connectionFactory" ref="unionClientFactory"/>-->
+<!--        <property name="outputChannel" ref="unionClientInboundChannel"/>-->
+<!--        <property name="clientMode" value="false"/>-->
+<!--        <property name="autoStartup" value="false"/>-->
+<!--        <property name="errorChannel" ref="errorChannel"/>-->
+<!--    </bean>-->
+
 
     <int:channel id="unionClientInboundChannel">
         <int:queue capacity="1000"/>

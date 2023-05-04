@@ -49,11 +49,14 @@
             connection-factory="unionServerFactory"/>
 
     <int-ip:tcp-outbound-channel-adapter
-            id="unionServerOutboundAdapter"
+            id="unionServerOutboundAdapterCopy"
             channel="unionServerOutboundChannel"
             client-mode="false"
+
             auto-startup="false"
             connection-factory="unionServerFactory"/>
+
+
 
 
     <bean id="unionServerMessageHandle"

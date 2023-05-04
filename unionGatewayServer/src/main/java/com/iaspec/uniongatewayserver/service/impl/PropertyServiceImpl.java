@@ -87,9 +87,6 @@ public class PropertyServiceImpl implements PropertyService, BeanNameAware {
             GatewayConstant.CLIENT_FACTORY.setTcpSocketFactorySupport(new UnionTcpNetSocketFactorySupport());
             GatewayConstant.CLIENT_FACTORY.setTcpNetConnectionSupport(new UnionTcpNetClientConnectionSupport());
 
-            GatewayConstant.CLIENT_INBOUND_CHANNEL_ADAPTER = applicationContext.getBean("unionClientInboundAdapter", TcpReceivingChannelAdapter.class);
-            GatewayConstant.SERVER_OUTBOUND_CHANNEL_ADAPTER = applicationContext.getBean("unionServerOutboundAdapter", PollingConsumer.class);
-
             GatewayConstant.ERROR_CHANNEL = applicationContext.getBean("errorChannel", MessageChannel.class);
 
 
@@ -115,7 +112,8 @@ public class PropertyServiceImpl implements PropertyService, BeanNameAware {
 
             if (GatewayConstant.isDuplex.get()){
                 SystemLogger.info("The system uses Duplex mode");
-
+                GatewayConstant.CLIENT_INBOUND_CHANNEL_ADAPTER = applicationContext.getBean("unionClientInboundAdapter", TcpReceivingChannelAdapter.class);
+                GatewayConstant.SERVER_OUTBOUND_CHANNEL_ADAPTER = applicationContext.getBean("unionServerOutboundAdapter", TcpSendingMessageHandler.class);
             }else {
 
                 SystemLogger.info("The system uses the default mode Simplex mode");

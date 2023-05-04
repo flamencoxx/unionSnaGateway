@@ -90,7 +90,7 @@ public class GatewayConstant {
 
     public static TcpReceivingChannelAdapter CLIENT_INBOUND_CHANNEL_ADAPTER;
 
-    public static PollingConsumer SERVER_OUTBOUND_CHANNEL_ADAPTER;
+    public static TcpSendingMessageHandler SERVER_OUTBOUND_CHANNEL_ADAPTER;
 
     public static MessageChannel ERROR_CHANNEL;
 
