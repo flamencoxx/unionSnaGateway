@@ -38,17 +38,17 @@ public class AdapterConfig {
         return adapter;
     }
 
-    @Bean(name = "unionServerOutboundAdapter")
-    @Conditional(IsDuplexMode.class)
-    @DependsOn(GatewayConstant.SERVER_FACTORY_NAME)
-    @Order(3)
-    public TcpSendingMessageHandler unionServerOutboundAdapter(){
-        TcpSendingMessageHandler adapter = new TcpSendingMessageHandler();
-        TcpNioServerConnectionFactory factory = applicationContext.getBean(GatewayConstant.SERVER_FACTORY_NAME, TcpNioServerConnectionFactory.class);
-        adapter.setConnectionFactory(factory);
-        adapter.setClientMode(false);
-        return adapter;
-    }
+//    @Bean(name = "unionServerOutboundAdapter")
+//    @Conditional(IsDuplexMode.class)
+//    @DependsOn(GatewayConstant.SERVER_FACTORY_NAME)
+//    @Order(3)
+//    public TcpSendingMessageHandler unionServerOutboundAdapter(){
+//        TcpSendingMessageHandler adapter = new TcpSendingMessageHandler();
+//        TcpNioServerConnectionFactory factory = applicationContext.getBean(GatewayConstant.SERVER_FACTORY_NAME, TcpNioServerConnectionFactory.class);
+//        adapter.setConnectionFactory(factory);
+//        adapter.setClientMode(false);
+//        return adapter;
+//    }
 
     static class IsDuplexMode implements Condition {
 

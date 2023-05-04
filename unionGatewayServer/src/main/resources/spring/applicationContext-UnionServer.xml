@@ -50,10 +50,9 @@
             connection-factory="unionServerFactory"/>
 
     <int-ip:tcp-outbound-channel-adapter
-            id="unionServerOutboundAdapterCopy"
+            id="unionServerOutboundAdapter"
             channel="unionServerOutboundChannel"
             client-mode="false"
-
             auto-startup="false"
             connection-factory="unionServerFactory"/>
 

@@ -112,8 +112,6 @@ public class PropertyServiceImpl implements PropertyService, BeanNameAware {
 
             if (GatewayConstant.isDuplex.get()){
                 SystemLogger.info("The system uses Duplex mode");
-                GatewayConstant.CLIENT_INBOUND_CHANNEL_ADAPTER = applicationContext.getBean("unionClientInboundAdapter", TcpReceivingChannelAdapter.class);
-                GatewayConstant.SERVER_OUTBOUND_CHANNEL_ADAPTER = applicationContext.getBean("unionServerOutboundAdapter", TcpSendingMessageHandler.class);
             }else {
 
                 SystemLogger.info("The system uses the default mode Simplex mode");

@@ -93,19 +93,19 @@ public class GatewayConstantLoader {
             }
             SystemLogger.info("System Dest Name is : {0}", GatewayConstant.SYSTEM_DEST_NAME);
 
-//            if (!GatewayConstant.abnormalShell.get()
-//                    .isFile() || !GatewayConstant.abnormalShell.get()
-//                    .exists() || !StringUtils.endsWithIgnoreCase(GatewayConstant.abnormalShell.get()
-//                    .getName(), ".sh")) {
-//                SystemLogger.error("Abnormal shell config error,please check file is exit and suffix with .sh",new String[]{},new ServiceException("AbnormalShell config error"));
-//            }
-//
-//            if (!GatewayConstant.normalShell.get()
-//                    .isFile() || !GatewayConstant.normalShell.get()
-//                    .exists() || !StringUtils.endsWithIgnoreCase(GatewayConstant.normalShell.get()
-//                    .getName(), ".sh")) {
-//                SystemLogger.error("Normal shell config error,please check file is exit and suffix with .sh",new String[]{},new ServiceException("NormalShell config error"));
-//            }
+            if (!GatewayConstant.abnormalShell.get()
+                    .isFile() || !GatewayConstant.abnormalShell.get()
+                    .exists() || !StringUtils.endsWithIgnoreCase(GatewayConstant.abnormalShell.get()
+                    .getName(), ".sh")) {
+                SystemLogger.error("Abnormal shell config error,please check file is exit and suffix with .sh",new String[]{},new ServiceException("AbnormalShell config error"));
+            }
+
+            if (!GatewayConstant.normalShell.get()
+                    .isFile() || !GatewayConstant.normalShell.get()
+                    .exists() || !StringUtils.endsWithIgnoreCase(GatewayConstant.normalShell.get()
+                    .getName(), ".sh")) {
+                SystemLogger.error("Normal shell config error,please check file is exit and suffix with .sh",new String[]{},new ServiceException("NormalShell config error"));
+            }
 
 
 
