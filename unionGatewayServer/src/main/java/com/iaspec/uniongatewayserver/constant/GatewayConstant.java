@@ -29,6 +29,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class GatewayConstant {
 
+
     public static final String SERVER_FACTORY_NAME = "unionServerFactory";
     public static String SERVER_LOCAL_HOST = StringUtils.EMPTY;
     public static int SERVER_LOCAL_PORT = 0;
