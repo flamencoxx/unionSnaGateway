@@ -264,38 +264,7 @@ public class CpicServiceImpl implements CpicService {
         return channel.send(message);
     }
 
-    public static void exitSystem() {
-        try {
-            Thread exitThread = new Thread(() -> {
-                SystemLogger.info("Call JVM shutdown hook method");
-                System.exit(0);
-            });
-            exitThread.setName("exit-thread");
-            exitThread.setDaemon(true);
-            exitThread.start();
-        } catch (Throwable e) {
-            SystemLogger.error("System exit error", e);
-        } finally {
-            Thread shutdownThread = new Thread(() -> {
-                try {
-                    RuntimeMXBean bean = ManagementFactory.getRuntimeMXBean();
-                    String jvmName = bean.getName();
-                    long pid = Long.parseLong(jvmName.split("@")[0]);
-                    SystemLogger.info("PID  = " + pid);
-                    Thread.sleep(30000);
-                    SystemLogger.info("Call JVM shutdown hook method occur exception,Force System shutdown");
-                } catch (Throwable e) {
-                    SystemLogger.error("System shutdown Exception");
-                } finally {
-                    Runtime.getRuntime()
-                            .halt(-1);
-                }
-            });
-            shutdownThread.setName("shutdown-thread");
-            shutdownThread.setDaemon(true);
-            shutdownThread.start();
-        }
-    }
+
 
     @Override
     public void checkReturnCode(CPICReturnCode returnCode) throws ServiceException {
@@ -367,4 +336,39 @@ public class CpicServiceImpl implements CpicService {
     public static synchronized void setLastTimeIsAccept(boolean lastTimeIsAccept) {
         CpicServiceImpl.lastTimeIsAccept = lastTimeIsAccept;
     }
+
+
+    public static void exitSystem() {
+        try {
+            Thread exitThread = new Thread(() -> {
+                SystemLogger.info("Call JVM shutdown hook method");
+                System.exit(0);
+            });
+            exitThread.setName("exit-thread");
+            exitThread.setDaemon(true);
+            exitThread.start();
+        } catch (Throwable e) {
+            SystemLogger.error("System exit error", e);
+        } finally {
+            Thread shutdownThread = new Thread(() -> {
+                try {
+                    RuntimeMXBean bean = ManagementFactory.getRuntimeMXBean();
+                    String jvmName = bean.getName();
+                    long pid = Long.parseLong(jvmName.split("@")[0]);
+                    SystemLogger.info("PID  = " + pid);
+                    Thread.sleep(30000);
+                    SystemLogger.info("Call JVM shutdown hook method occur exception,Force System shutdown");
+                } catch (Throwable e) {
+                    SystemLogger.error("System shutdown Exception");
+                } finally {
+                    Runtime.getRuntime()
+                            .halt(-1);
+                }
+            });
+            shutdownThread.setName("shutdown-thread");
+            shutdownThread.setDaemon(true);
+            shutdownThread.start();
+        }
+    }
+
 }

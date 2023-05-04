@@ -115,17 +115,15 @@ public class PropertyServiceImpl implements PropertyService, BeanNameAware {
 
             if (GatewayConstant.isDuplex.get()){
                 SystemLogger.info("The system uses Duplex mode");
-                GatewayConstant.CLIENT_INBOUND_CHANNEL_ADAPTER.start();
-                GatewayConstant.SERVER_OUTBOUND_CHANNEL_ADAPTER.start();
+
             }else {
-                GatewayConstant.CLIENT_INBOUND_CHANNEL_ADAPTER.stop();
-                GatewayConstant.SERVER_OUTBOUND_CHANNEL_ADAPTER.stop();
+
                 SystemLogger.info("The system uses the default mode Simplex mode");
             }
 
 
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
             SystemLogger.error("Occurs a error {0} when init prop", new String[]{e.getMessage()}, e);
         } finally {
         }
