@@ -11,8 +11,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.integration.ip.tcp.connection.TcpConnectionSupport;
 import org.springframework.integration.ip.tcp.connection.TcpNetClientConnectionFactory;
+import org.springframework.integration.ip.tcp.connection.TcpNetServerConnectionFactory;
+import org.springframework.integration.ip.tcp.connection.TcpNioServerConnectionFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ArrayBlockingQueue;
@@ -26,6 +29,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @date 2022/9/23  16:42
  */
 @Component
+@DependsOn("unionMockServerFactory")
 public class RecordJob implements ApplicationRunner {
 
     @Autowired
@@ -54,6 +58,8 @@ public class RecordJob implements ApplicationRunner {
         GatewayConstant.IS_EBC_OR_ASCII = isEbcOrAscii;
         GatewayConstant.mockServerPort = serverPort;
         GatewayConstant.mockClientPort = clientPort;
+        TcpNioServerConnectionFactory serverFactory = applicationContext.getBean("unionMockServerFactory", TcpNioServerConnectionFactory.class);
+        serverFactory.registerSender(new UnionMockServerSender());
 
 //        GatewayConstant.clientFactory = applicationContext.getBean("unionMockClientFactory", TcpNetClientConnectionFactory.class);
 //        GatewayConstant.clientConnect = GatewayConstant.clientFactory.getConnection();

@@ -48,4 +48,11 @@ public class ExitSystemUtil {
             shutdownThread.start();
         }
     }
+
+    public static void closeFactoryStream(){
+        if(GatewayConstant.SERVER_FACTORY.isRunning() && GatewayConstant.SERVER_FACTORY.getConnection().isOpen()){
+//            GatewayConstant.SERVER_FACTORY.getConnection().shutdownInput();
+//            GatewayConstant.SERVER_OUTBOUND_CHANNEL.getQueueSize()
+        }
+    }
 }

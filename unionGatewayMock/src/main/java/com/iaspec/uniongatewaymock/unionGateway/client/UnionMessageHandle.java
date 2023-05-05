@@ -36,8 +36,6 @@ public class UnionMessageHandle {
             str = new String(data, StandardCharsets.US_ASCII);
         }
 
-        GatewayConstant.CONNECTION_ID = (String) message.getHeaders()
-                .get(IpHeaders.CONNECTION_ID);
 
 
         SystemLogger.info("Accept Msg form gateway, msg={0}",str);

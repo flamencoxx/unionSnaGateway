@@ -109,18 +109,18 @@ public class ConcurrentSendMsgTest {
                     content = msgContent;
                 }
                 String date = DateUtil.now();
-                if (StringUtils.isEmpty(GatewayConstant.CONNECTION_ID)) {
-                    sendTestController.sendMsg(formatClientMsg(content));
-                } else {
-                    if (balance.choice() == 1) {
-                        sendTestController.sendMsg(formatClientMsg(content));
-                    } else {
-                        sendTestController.sendMsg2Client(formatServerMsg(content));
-                    }
+//                if (StringUtils.isEmpty(GatewayConstant.mockServerConnectionId)) {
+//                    sendTestController.sendMsg(formatClientMsg(content));
+//                } else {
+//                    if (balance.choice() == 1) {
+//                        sendTestController.sendMsg(formatClientMsg(content));
+//                    } else {
+//                        sendTestController.sendMsg2Client(formatServerMsg(content));
+//                    }
+//
+//                }
 
-                }
-
-//                sendTestController.sendMsg(formatClientMsg(content));
+                sendTestController.sendMsg(formatClientMsg(content));
 //                SystemLogger.info("CurrentSendMsgTest, date= {0}, msgId={1}, msgContent={2}", date, id, formatClientMsg(content));
             } finally {
 

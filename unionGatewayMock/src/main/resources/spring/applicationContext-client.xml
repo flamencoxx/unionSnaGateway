@@ -48,14 +48,12 @@
             id="inputClientChannel" channel="unionMockClientInChannel"
             client-mode="false" connection-factory="unionMockClientFactory" />
 
-    <int:channel id="unionMockClientOutChannel">
-        <int:queue capacity="500"/>
-    </int:channel>
+    <int:channel id="unionMockClientOutChannel"/>
 
     <int:channel id="unionMockClientInChannel" />
 
 
-    <task:executor id="taskExecutor" pool-size="0-4"/>
+<!--    <task:executor id="taskExecutor" pool-size="0-4"/>-->
 
 
     <bean id="unionMessageHandler"

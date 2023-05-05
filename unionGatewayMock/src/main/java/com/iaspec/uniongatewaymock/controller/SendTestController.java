@@ -86,7 +86,7 @@ public class SendTestController {
         System.arraycopy(lenBytes, 0, total, 0, 4);
         System.arraycopy(res, 0, total, 4, res.length);
         GatewayConstant.sendRecords.put(FlamencoUtil.convert2Accept(content),new TimeInterval());
-        String connectionId = GatewayConstant.CONNECTION_ID;
+        String connectionId = GatewayConstant.mockServerConnectionId;
         Message<byte[]> message = MessageBuilder.withPayload(total)
                 .setHeader(IpHeaders.CONNECTION_ID, connectionId)
                 .build();
