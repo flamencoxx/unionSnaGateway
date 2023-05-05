@@ -1,9 +1,12 @@
 package com.iaspec.uniongatewayserver.constant;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.iaspec.uniongatewayserver.config.UnionTcpNetClientConnectionFactory;
 import com.iaspec.uniongatewayserver.model.Holder;
+import com.iaspec.uniongatewayserver.service.impl.CpicServiceImpl;
 import com.iaspec.uniongatewayserver.util.CommonUtils;
+import com.iaspec.uniongatewayserver.util.ListBalance;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.integration.endpoint.PollingConsumer;
 import org.springframework.integration.ip.tcp.TcpReceivingChannelAdapter;
@@ -22,6 +25,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 
 /**
  * @author Flamenco.xxx
@@ -121,6 +125,9 @@ public class GatewayConstant {
     public static final AtomicBoolean isAbnormalShutdown = new AtomicBoolean(false);
 
     public static final AtomicBoolean isDuplex = new AtomicBoolean(false);
+
+
+    public static final ListBalance<Function<byte[], Boolean>> SEND_FUNC = new ListBalance<>(Lists.newArrayList(CpicServiceImpl::server2UMPS, CpicServiceImpl::client2UMPS));
 
 
     // ======================================================================================

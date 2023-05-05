@@ -191,9 +191,8 @@ public class CpicServiceImpl implements CpicService {
             }
 
             boolean isSend;
-            if(GatewayConstant.isDuplex.get() && GatewayConstant.SERVER_OUTBOUND_CHANNEL_ADAPTER != null){
-                ListBalance<Function<byte[], Boolean>> sendFuncs = new ListBalance<>(Lists.newArrayList(this::server2UMPS, this::client2UMPS));
-                isSend = sendFuncs.choice().apply(acceptResult.getData());
+            if(GatewayConstant.isDuplex.get()){
+                isSend = GatewayConstant.SEND_FUNC.choice().apply(acceptResult.getData());
             }else {
                 isSend = clientSend2UMPS(acceptResult.getData(), GatewayConstant.CLIENT_OUTBOUND_CHANNEL);
             }
@@ -254,7 +253,7 @@ public class CpicServiceImpl implements CpicService {
         return channel.send(message);
     }
 
-    public boolean server2UMPS(byte[] data){
+    public static boolean server2UMPS(byte[] data){
         Message<byte[]> message = MessageBuilder.withPayload(data)
                 .setHeader(IpHeaders.CONNECTION_ID, GatewayConstant.IP_CONNECTION_ID.get())
                 .build();
@@ -262,7 +261,7 @@ public class CpicServiceImpl implements CpicService {
         return true;
     }
 
-    public boolean client2UMPS(byte[] data){
+    public static boolean client2UMPS(byte[] data){
         InetAddress addr;
         Message<byte[]> message = null;
         try {
