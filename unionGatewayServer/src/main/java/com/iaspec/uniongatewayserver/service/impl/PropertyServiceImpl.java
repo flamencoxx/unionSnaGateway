@@ -92,7 +92,6 @@ public class PropertyServiceImpl implements PropertyService, BeanNameAware {
 
 
 
-
             if (ObjectUtils.anyNull(GatewayConstant.SERVER_FACTORY,
                     GatewayConstant.SERVER_INBOUND_CHANNEL,
                     GatewayConstant.SERVER_OUTBOUND_CHANNEL,

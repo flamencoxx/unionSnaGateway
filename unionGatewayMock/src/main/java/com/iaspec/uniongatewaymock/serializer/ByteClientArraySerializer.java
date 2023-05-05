@@ -29,6 +29,7 @@ public class ByteClientArraySerializer extends AbstractPooledBufferByteArraySeri
     @Override
     protected byte[] doDeserialize(InputStream inputStream, byte[] buffer) throws IOException {
         SystemLogger.debugMethod(getClass(), "doDeserialize", true, new String[] {});
+        SystemLogger.info("doDeserialize2");
         int n = this.getBytesLen(inputStream, buffer);
         byte[] bytes;
         int deserializedMessageLength = this.getBytesLen(inputStream, buffer);

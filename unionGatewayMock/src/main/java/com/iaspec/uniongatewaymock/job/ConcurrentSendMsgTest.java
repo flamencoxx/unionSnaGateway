@@ -108,7 +108,7 @@ public class ConcurrentSendMsgTest {
                 if (StringUtils.isNotBlank(msgContent)) {
                     content = msgContent;
                 }
-                String date = DateUtil.now();
+//                String date = DateUtil.now();
 //                if (StringUtils.isEmpty(GatewayConstant.mockServerConnectionId)) {
 //                    sendTestController.sendMsg(formatClientMsg(content));
 //                } else {

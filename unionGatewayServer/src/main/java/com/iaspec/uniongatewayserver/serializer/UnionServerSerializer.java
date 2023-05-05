@@ -53,6 +53,7 @@ public class UnionServerSerializer extends AbstractPooledBufferByteArraySerializ
     @Override
     public void serialize(byte[] bytes, OutputStream outputStream) throws IOException { //        SystemLogger.infoMethod(getClass(), "serialize", true, new String[] {"bytes.length"}, bytes.length);
         try {
+            SystemLogger.info("serialize1");
             SystemLogger.debug("bytes.length={0}", bytes.length);
             byte[] totalBytes = new byte[4 + bytes.length];
             byte[] lengthBytes = getMessageLength(bytes).getBytes(StandardCharsets.US_ASCII);

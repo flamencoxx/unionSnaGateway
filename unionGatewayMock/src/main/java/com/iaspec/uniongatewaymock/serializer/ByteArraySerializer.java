@@ -24,6 +24,7 @@ public class ByteArraySerializer extends AbstractPooledBufferByteArraySerializer
 	@Override
 	protected byte[] doDeserialize(InputStream inputStream, byte[] buffer) throws IOException {
 		SystemLogger.debugMethod(getClass(), "doDeserialize", true, new String[] {});
+		SystemLogger.info("doDeserialize1");
 		int n = this.getBytesLen(inputStream, buffer);
 		byte[] bytes;
 		if (n == 0) {

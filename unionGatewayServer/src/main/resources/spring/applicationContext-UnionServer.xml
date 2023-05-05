@@ -51,7 +51,7 @@
             id="unionServerOutboundAdapter"
             channel="unionServerOutboundChannel"
             client-mode="false"
-            auto-startup="false"
+            auto-startup="true"
             connection-factory="unionServerFactory"/>
 
 

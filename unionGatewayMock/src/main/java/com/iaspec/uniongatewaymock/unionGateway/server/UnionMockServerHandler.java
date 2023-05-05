@@ -46,7 +46,7 @@ public class UnionMockServerHandler {
         TimeNewCons timeCons = TimeNewCons.getInstance();
         long timer = timeCons.acceptMsg(str);
 
-        SystemLogger.info("Accept Msg form gateway, msg={0}",str);
+        SystemLogger.info("Accept Msg form gateway1, msg={0}",str);
 //        GatewayConstant.CONNECTION_ID = (String) message.getHeaders().get(IpHeaders.CONNECTION_ID);
     }
 }

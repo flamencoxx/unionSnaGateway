@@ -50,7 +50,9 @@
 
     <int:channel id="unionMockClientOutChannel"/>
 
-    <int:channel id="unionMockClientInChannel" />
+    <int:channel id="unionMockClientInChannel">
+<!--        <int:queue capacity="1000"/>-->
+    </int:channel>
 
 
 <!--    <task:executor id="taskExecutor" pool-size="0-4"/>-->
@@ -62,7 +64,9 @@
     <int:service-activator
             input-channel="unionMockClientInChannel"
             ref="unionMessageHandler"
-            method="handleMessage"/>
+            method="handleMessage">
+
+    </int:service-activator>
 
 
     <!--    event-->
