@@ -37,8 +37,6 @@ public class GatewayController {
 
     @RequestMapping(value = "/getAdapterInfo", method = RequestMethod.GET)
     public ResponseEntity<GatewayInfo> getAdapterInfo(){
-        boolean running = GatewayConstant.CLIENT_INBOUND_CHANNEL_ADAPTER.isRunning();
-        boolean running1 = GatewayConstant.SERVER_OUTBOUND_CHANNEL_ADAPTER.isRunning();
         return ResponseEntity.ok(new GatewayInfo());
     }
 
@@ -49,6 +47,16 @@ public class GatewayController {
         Message<byte[]> message = MessageBuilder.withPayload(data)
                 .setHeader(IpHeaders.CONNECTION_ID, GatewayConstant.IP_CONNECTION_ID.get())
                 .build();
-        GatewayConstant.SERVER_OUTBOUND_CHANNEL_ADAPTER.handleMessage(message);
     }
+
+    @RequestMapping(value = "/unionClient2Mock" ,method = RequestMethod.POST)
+    public void send2Mock(){
+        String str = "flamencoTest";
+        byte[] data = CpicUtil.convertToEbc(str.getBytes(StandardCharsets.US_ASCII), str.getBytes(StandardCharsets.US_ASCII).length);
+        Message<byte[]> message = MessageBuilder.withPayload(data)
+                .setHeader(IpHeaders.CONNECTION_ID, GatewayConstant.IP_CONNECTION_ID.get())
+                .build();
+        GatewayConstant.CLIENT_OUTBOUND_CHANNEL.send(message);
+    }
+
 }

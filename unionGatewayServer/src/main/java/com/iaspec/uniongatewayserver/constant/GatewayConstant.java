@@ -8,6 +8,7 @@ import com.iaspec.uniongatewayserver.service.impl.CpicServiceImpl;
 import com.iaspec.uniongatewayserver.util.CommonUtils;
 import com.iaspec.uniongatewayserver.util.ListBalance;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.integration.channel.QueueChannel;
 import org.springframework.integration.endpoint.PollingConsumer;
 import org.springframework.integration.ip.tcp.TcpReceivingChannelAdapter;
 import org.springframework.integration.ip.tcp.TcpSendingMessageHandler;
@@ -94,7 +95,7 @@ public class GatewayConstant {
 
     public static TcpReceivingChannelAdapter CLIENT_INBOUND_CHANNEL_ADAPTER;
 
-    public static TcpSendingMessageHandler SERVER_OUTBOUND_CHANNEL_ADAPTER;
+    public static PollingConsumer SERVER_OUTBOUND_CHANNEL_ADAPTER;
 
     public static MessageChannel ERROR_CHANNEL;
 

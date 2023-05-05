@@ -10,11 +10,11 @@ import java.math.BigInteger;
  */
 public class RecordUtil {
 
-    public static void umps2GatewayRecord(){
+    public static synchronized void umps2GatewayRecord(){
         GatewayConstant.ACCEPT_MSG_COUNT = GatewayConstant.ACCEPT_MSG_COUNT.add(BigInteger.ONE);
     }
 
-    public static void Gateway2UmpsRecord(){
+    public static synchronized void Gateway2UmpsRecord(){
         GatewayConstant.SEND_MSG_COUNT = GatewayConstant.SEND_MSG_COUNT.add(BigInteger.ONE);
     }
 

@@ -18,6 +18,7 @@ import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.Order;
+import org.springframework.integration.channel.QueueChannel;
 import org.springframework.integration.endpoint.PollingConsumer;
 import org.springframework.integration.ip.tcp.TcpReceivingChannelAdapter;
 import org.springframework.integration.ip.tcp.TcpSendingMessageHandler;
@@ -121,6 +122,7 @@ public class PropertyServiceImpl implements PropertyService, BeanNameAware {
 
         } catch (Throwable e) {
             SystemLogger.error("Occurs a error {0} when init prop", new String[]{e.getMessage()}, e);
+            ExitSystemUtil.exitSystem(ExceptionEnum.INIT_ERROR, "Exception Detail : " + e.getMessage());
         } finally {
         }
 
