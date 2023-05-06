@@ -46,10 +46,10 @@
             channel="unionOutboundChannel"
             connection-factory="unionMockServerFactory"/>
 
-<!--    <task:executor id="taskExecutor2" pool-size="4" rejection-policy="CALLER_RUNS"/>-->
+    <task:executor id="taskExecutor2" pool-size="4" rejection-policy="CALLER_RUNS"/>
 
     <int:channel id="unionInboundChannel">
-<!--        <int:queue capacity="1000"/>-->
+        <int:queue capacity="1000"/>
     </int:channel>
 
     <int:channel id="unionOutboundChannel"/>
@@ -58,7 +58,7 @@
             input-channel="unionInboundChannel"
             ref="unionMockServerHandler"
             method="handleMessage">
-<!--        <int:poller receive-timeout="1000" task-executor="taskExecutor2" max-messages-per-poll="1" fixed-rate="20"/>-->
+        <int:poller receive-timeout="1000" task-executor="taskExecutor2" max-messages-per-poll="1" fixed-rate="20"/>
     </int:service-activator>
 
 </beans>

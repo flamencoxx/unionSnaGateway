@@ -49,6 +49,10 @@ public class UnionServerMessageHandle {
             SystemLogger.debug("message.payload.length={0}", message.getPayload().length);
 
             byte[] data = message.getPayload();
+            if (data.length == 0){
+                SystemLogger.info("Accept a idle Message");
+                return;
+            }
 //            获取轮训类,通过choice方法不断轮训下一个
             String systemDestName = GatewayConstant.SYSTEM_DEST_NAME;
 //            send Msg to mainFrame

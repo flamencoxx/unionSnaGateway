@@ -40,8 +40,10 @@
 
 
     <int-ip:tcp-outbound-channel-adapter
-            id="outboundClientChannel" channel="unionMockClientOutChannel"
-            client-mode="false" connection-factory="unionMockClientFactory">
+            id="outboundClientChannel"
+            channel="unionMockClientOutChannel"
+            client-mode="false"
+            connection-factory="unionMockClientFactory">
     </int-ip:tcp-outbound-channel-adapter>
 
     <int-ip:tcp-inbound-channel-adapter
@@ -51,7 +53,7 @@
     <int:channel id="unionMockClientOutChannel"/>
 
     <int:channel id="unionMockClientInChannel">
-<!--        <int:queue capacity="1000"/>-->
+        <int:queue capacity="1000"/>
     </int:channel>
 
 
@@ -65,7 +67,7 @@
             input-channel="unionMockClientInChannel"
             ref="unionMessageHandler"
             method="handleMessage">
-
+        <int:poller receive-timeout="1000" task-executor="taskExecutor2" max-messages-per-poll="1" fixed-rate="20"/>
     </int:service-activator>
 
 
