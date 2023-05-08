@@ -192,9 +192,9 @@ public class CpicServiceImpl implements CpicService {
 
             boolean isSend;
             if(GatewayConstant.isDuplex.get()){
-//                isSend = server2UMPS(acceptResult.getData());
+                isSend = server2UMPS(acceptResult.getData());
 //                isSend = clientSend2UMPS(acceptResult.getData(), GatewayConstant.CLIENT_OUTBOUND_CHANNEL);
-                isSend = GatewayConstant.SEND_FUNC.choice().apply(acceptResult.getData());
+//                isSend = GatewayConstant.SEND_FUNC.choice().apply(acceptResult.getData());
             }else {
                 isSend = clientSend2UMPS(acceptResult.getData(), GatewayConstant.CLIENT_OUTBOUND_CHANNEL);
             }

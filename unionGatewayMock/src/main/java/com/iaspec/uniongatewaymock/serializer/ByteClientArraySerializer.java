@@ -32,12 +32,11 @@ public class ByteClientArraySerializer extends AbstractPooledBufferByteArraySeri
         SystemLogger.info("doDeserialize2");
         int n = this.getBytesLen(inputStream, buffer);
         byte[] bytes;
-        int deserializedMessageLength = this.getBytesLen(inputStream, buffer);
-        if (deserializedMessageLength == 0) {
+        if (n == 0) {
             // empty message, means the message is drop
             return null;
         } else {
-            bytes = Arrays.copyOfRange(buffer, 4, deserializedMessageLength);
+            bytes = Arrays.copyOfRange(buffer, 4, n);
         }
         SystemLogger.debugMethod(getClass(), "doDeserialize", false, new String[] {});
         return bytes;

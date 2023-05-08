@@ -50,6 +50,9 @@ public class ConcurrentSendMsgTest {
     @Value("${msgContent}")
     public String msgContent = StringUtils.EMPTY;
 
+    @Value("${isDuplex}")
+    private Boolean isDuplex = false;
+
     @Value("${concurrentSendTimes}")
     public int sendTimes = 0;
 
@@ -108,19 +111,24 @@ public class ConcurrentSendMsgTest {
                 if (StringUtils.isNotBlank(msgContent)) {
                     content = msgContent;
                 }
-//                String date = DateUtil.now();
-//                if (StringUtils.isEmpty(GatewayConstant.mockServerConnectionId)) {
-//                    sendTestController.sendMsg(formatClientMsg(content));
-//                } else {
-//                    if (balance.choice() == 1) {
-//                        sendTestController.sendMsg(formatClientMsg(content));
-//                    } else {
-//                        sendTestController.sendMsg2Client(formatServerMsg(content));
-//                    }
-//
-//                }
+                String date = DateUtil.now();
 
-                sendTestController.sendMsg(formatClientMsg(content));
+                if (isDuplex){
+                    if(StringUtils.isEmpty(GatewayConstant.mockServerConnectionId)){
+                        sendTestController.sendMsg(formatClientMsg(content));
+                    }else {
+                        if (balance.choice() == 1){
+                            sendTestController.sendMsg(formatClientMsg(content));
+                        }else {
+                            sendTestController.sendMsg2Client(formatServerMsg(content));
+                        }
+                    }
+                } else {
+                    sendTestController.sendMsg(formatClientMsg(content));
+                }
+
+
+
 //                SystemLogger.info("CurrentSendMsgTest, date= {0}, msgId={1}, msgContent={2}", date, id, formatClientMsg(content));
             } finally {
 

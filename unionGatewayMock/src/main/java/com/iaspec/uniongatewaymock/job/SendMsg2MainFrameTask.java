@@ -34,6 +34,9 @@ public class SendMsg2MainFrameTask {
     @Value("${jobCron}")
     private String jobCron = "*/5 * * * * ?";
 
+    @Value("${isDuplex}")
+    private Boolean isDuplex = false;
+
     @Value("${sendTimes}")
     public int sendTimes = 0;
 
@@ -68,17 +71,23 @@ public class SendMsg2MainFrameTask {
         if(aSendTimes.get() > sendTimes){
             return;
         }
-//        if(StringUtils.isEmpty(GatewayConstant.CONNECTION_ID)){
-//            sendTestController.sendMsg(formatClientMsg(content));
-//        }else {
-//            if (balance.choice() == 1){
-//                sendTestController.sendMsg(formatClientMsg(content));
-//            }else {
-//                sendTestController.sendMsg2Client(formatServerMsg(content));
-//            }
-//
-//        }
-        sendTestController.sendMsg(formatClientMsg(content));
+        if (isDuplex){
+            if(StringUtils.isEmpty(GatewayConstant.mockServerConnectionId)){
+                sendTestController.sendMsg(formatClientMsg(content));
+            }else {
+                if (balance.choice() == 1){
+                    sendTestController.sendMsg(formatClientMsg(content));
+                }else {
+                    sendTestController.sendMsg2Client(formatServerMsg(content));
+                }
+
+            }
+        } else {
+            sendTestController.sendMsg(formatClientMsg(content));
+        }
+
+
+
         String date = DateUtil.now();
 //        SystemLogger.info("线程ID: {0}, MsgId : {1}, date : {2}, MsgContent : {3}",Thread.currentThread().getName(),id,date,formatServerMsg(content));
 

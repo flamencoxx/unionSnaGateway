@@ -21,11 +21,7 @@
                          value="${spring.serializer.maxMessageSize}" />
     </bean>
 
-    <bean id="byteArraySerializer"
-          class="com.iaspec.uniongatewaymock.serializer.ByteArraySerializer">
-        <constructor-arg index="0"
-                         value="${spring.serializer.maxMessageSize}" />
-    </bean>
+
 
     <int-ip:tcp-connection-factory
             id="unionMockClientFactory"
@@ -33,6 +29,7 @@
             host="${mock.client.host}"
             port="${mock.client.port}"
             single-use="false"
+            using-nio="true"
             so-keep-alive="true"
             so-linger="20000"
             serializer="byteClientArraySerializer"
@@ -47,8 +44,10 @@
     </int-ip:tcp-outbound-channel-adapter>
 
     <int-ip:tcp-inbound-channel-adapter
-            id="inputClientChannel" channel="unionMockClientInChannel"
-            client-mode="false" connection-factory="unionMockClientFactory" />
+            id="inputClientChannel"
+            channel="unionMockClientInChannel"
+            client-mode="false"
+            connection-factory="unionMockClientFactory" />
 
     <int:channel id="unionMockClientOutChannel"/>
 
