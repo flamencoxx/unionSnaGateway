@@ -30,13 +30,13 @@ public class GatewayServiceImpl implements GatewayService {
         try {
             GatewayConstant.SERVER_REMOTE_HOST = con.getHostAddress();
             GatewayConstant.SERVER_REMOTE_PORT = con.getPort();
-            GatewayConstant.IP_CONNECTION_ID.set(con.getConnectionId());
+            GatewayConstant.SERVER_CONNECTION_ID.set(con.getConnectionId());
             String localHost = con.getSocketInfo()
                     .getLocalAddress().getHostAddress();
             int localPort = con.getSocketInfo()
                     .getLocalPort();
 
-            SystemLogger.info("UMPS connect to Union Gateway, UMPS : {0} : {1} connect to Gateway: {2} : {3},  connectId : {4}",GatewayConstant.SERVER_REMOTE_HOST,GatewayConstant.SERVER_REMOTE_PORT,localHost,localPort,GatewayConstant.IP_CONNECTION_ID);
+            SystemLogger.info("UMPS connect to Union Gateway, UMPS : {0} : {1} connect to Gateway: {2} : {3},  connectId : {4}",GatewayConstant.SERVER_REMOTE_HOST,GatewayConstant.SERVER_REMOTE_PORT,localHost,localPort,GatewayConstant.SERVER_CONNECTION_ID);
 
         } catch (Exception e) {
             SystemLogger.error("Occurs an error while handle Union Open Connection, error= {0}",new String[]{e.getMessage()},e);
@@ -55,11 +55,11 @@ public class GatewayServiceImpl implements GatewayService {
             int localPort = con.getSocketInfo()
                     .getLocalPort();
 
-            SystemLogger.info("umps and gateway disconnect, UMPS : {0} : {1} disconnect with Gateway: {2} : {3},  connectId : {4}",GatewayConstant.SERVER_REMOTE_HOST,GatewayConstant.SERVER_REMOTE_PORT,localHost,localPort,GatewayConstant.IP_CONNECTION_ID);
+            SystemLogger.info("umps and gateway disconnect, UMPS : {0} : {1} disconnect with Gateway: {2} : {3},  connectId : {4}",GatewayConstant.SERVER_REMOTE_HOST,GatewayConstant.SERVER_REMOTE_PORT,localHost,localPort,GatewayConstant.SERVER_CONNECTION_ID);
 
             GatewayConstant.SERVER_REMOTE_HOST = StringUtils.EMPTY;
             GatewayConstant.SERVER_REMOTE_PORT = 0;
-            GatewayConstant.IP_CONNECTION_ID.set(StringUtils.EMPTY);
+            GatewayConstant.SERVER_CONNECTION_ID.set(StringUtils.EMPTY);
 
         } catch (Exception e) {
             throw new RuntimeException(e);

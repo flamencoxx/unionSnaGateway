@@ -11,8 +11,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.integration.channel.QueueChannel;
 import org.springframework.integration.endpoint.PollingConsumer;
 import org.springframework.integration.ip.tcp.TcpReceivingChannelAdapter;
-import org.springframework.integration.ip.tcp.TcpSendingMessageHandler;
-import org.springframework.integration.ip.tcp.connection.AbstractClientConnectionFactory;
 import org.springframework.integration.ip.tcp.connection.AbstractServerConnectionFactory;
 import org.springframework.messaging.MessageChannel;
 
@@ -55,7 +53,9 @@ public class GatewayConstant {
 
     public static boolean isClientConnect = false;
 
-    public static AtomicReference<String> IP_CONNECTION_ID = new AtomicReference<>();
+    public static AtomicReference<String> SERVER_CONNECTION_ID = new AtomicReference<>();
+
+    public static AtomicReference<String> CLIENT_CONNECTION_ID = new AtomicReference<>();
 
     public final static String GATEWAY_HOME = CommonUtils.expandEnvVars("${gateway.home}");
 
@@ -83,13 +83,13 @@ public class GatewayConstant {
 
     public static AbstractServerConnectionFactory SERVER_FACTORY;
 
-    public static MessageChannel SERVER_INBOUND_CHANNEL;
+    public static QueueChannel SERVER_INBOUND_CHANNEL;
 
     public static MessageChannel SERVER_OUTBOUND_CHANNEL;
 
     public static UnionTcpNetClientConnectionFactory CLIENT_FACTORY;
 
-    public static MessageChannel CLIENT_INBOUND_CHANNEL;
+    public static QueueChannel CLIENT_INBOUND_CHANNEL;
 
     public static MessageChannel CLIENT_OUTBOUND_CHANNEL;
 

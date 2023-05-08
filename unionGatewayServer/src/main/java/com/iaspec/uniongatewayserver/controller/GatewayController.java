@@ -27,7 +27,7 @@ public class GatewayController {
         info.setLocalPort(GatewayConstant.SERVER_LOCAL_PORT);
         info.setRemoteAddress(GatewayConstant.SERVER_REMOTE_HOST);
         info.setRemotePort(GatewayConstant.SERVER_REMOTE_PORT);
-        info.setIpConnectionID(GatewayConstant.IP_CONNECTION_ID.get());
+        info.setIpConnectionID(GatewayConstant.SERVER_CONNECTION_ID.get());
         info.setServerOpenConnectTimes(GatewayConstant.SERVER_OPEN_CONNECT_TIMES.get());
         info.setServerCloseConnectTimes(GatewayConstant.SERVER_CLOSE_CONNECT_TIMES.get());
         info.setAcceptMsgCount(GatewayConstant.ACCEPT_MSG_COUNT.toString());
@@ -45,7 +45,7 @@ public class GatewayController {
         String str = "flamencoTest";
         byte[] data = CpicUtil.convertToEbc(str.getBytes(StandardCharsets.US_ASCII), str.getBytes(StandardCharsets.US_ASCII).length);
         Message<byte[]> message = MessageBuilder.withPayload(data)
-                .setHeader(IpHeaders.CONNECTION_ID, GatewayConstant.IP_CONNECTION_ID.get())
+                .setHeader(IpHeaders.CONNECTION_ID, GatewayConstant.SERVER_CONNECTION_ID.get())
                 .build();
     }
 
@@ -54,7 +54,7 @@ public class GatewayController {
         String str = "flamencoTest";
         byte[] data = CpicUtil.convertToEbc(str.getBytes(StandardCharsets.US_ASCII), str.getBytes(StandardCharsets.US_ASCII).length);
         Message<byte[]> message = MessageBuilder.withPayload(data)
-                .setHeader(IpHeaders.CONNECTION_ID, GatewayConstant.IP_CONNECTION_ID.get())
+                .setHeader(IpHeaders.CONNECTION_ID, GatewayConstant.SERVER_CONNECTION_ID.get())
                 .build();
         GatewayConstant.CLIENT_OUTBOUND_CHANNEL.send(message);
     }

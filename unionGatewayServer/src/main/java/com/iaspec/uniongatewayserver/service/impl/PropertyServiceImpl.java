@@ -71,7 +71,7 @@ public class PropertyServiceImpl implements PropertyService, BeanNameAware {
             GatewayConstant.SERVER_LOCAL_HOST = InetAddress.getLocalHost()
                     .getHostAddress();
             GatewayConstant.SERVER_FACTORY = applicationContext.getBean(GatewayConstant.SERVER_FACTORY_NAME, AbstractServerConnectionFactory.class);
-            GatewayConstant.SERVER_INBOUND_CHANNEL = applicationContext.getBean("unionServerInboundChannel", MessageChannel.class);
+            GatewayConstant.SERVER_INBOUND_CHANNEL = applicationContext.getBean("unionServerInboundChannel", QueueChannel.class);
             GatewayConstant.SERVER_OUTBOUND_CHANNEL = applicationContext.getBean("unionServerOutboundChannel", MessageChannel.class);
 
             GatewayConstant.SERVER_FACTORY.registerSender(new UnionServerTcpSender());
@@ -81,7 +81,7 @@ public class PropertyServiceImpl implements PropertyService, BeanNameAware {
             GatewayConstant.CLIENT_LOCAL_PORT = this.getIntegerValue(GatewayConstant.PROP_KEY_CLIENT_LOCAL_PORT, 0);
 
             GatewayConstant.CLIENT_FACTORY = applicationContext.getBean(GatewayConstant.CLIENT_FACTORY_NAME, UnionTcpNetClientConnectionFactory.class);
-            GatewayConstant.CLIENT_INBOUND_CHANNEL = applicationContext.getBean("unionClientInboundChannel", MessageChannel.class);
+            GatewayConstant.CLIENT_INBOUND_CHANNEL = applicationContext.getBean("unionClientInboundChannel", QueueChannel.class);
             GatewayConstant.CLIENT_OUTBOUND_CHANNEL = applicationContext.getBean("unionClientOutboundChannel", MessageChannel.class);
 
             GatewayConstant.CLIENT_FACTORY.registerSender(new UnionClientTcpSender());

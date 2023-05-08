@@ -1,7 +1,6 @@
 package com.iaspec.uniongatewayserver.service.impl;
 
 import COM.ibm.eNetwork.cpic.*;
-import com.google.common.collect.Lists;
 import com.iaspec.uniongatewayserver.constant.GatewayConstant;
 import com.iaspec.uniongatewayserver.exception.ServiceException;
 import com.iaspec.uniongatewayserver.model.AcceptResult;
@@ -12,22 +11,17 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.integration.ip.IpHeaders;
-import org.springframework.integration.ip.tcp.TcpSendingMessageHandler;
-import org.springframework.integration.ip.tcp.connection.TcpConnectionSupport;
 import org.springframework.integration.support.MessageBuilder;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
-import java.lang.reflect.Method;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Function;
 
 /**
  * @author Flamenco.xxx
@@ -192,9 +186,8 @@ public class CpicServiceImpl implements CpicService {
 
             boolean isSend;
             if(GatewayConstant.isDuplex.get()){
-                isSend = server2UMPS(acceptResult.getData());
-//                isSend = clientSend2UMPS(acceptResult.getData(), GatewayConstant.CLIENT_OUTBOUND_CHANNEL);
-//                isSend = GatewayConstant.SEND_FUNC.choice().apply(acceptResult.getData());
+//                isSend = server2UMPS(acceptResult.getData());
+                isSend = GatewayConstant.SEND_FUNC.choice().apply(acceptResult.getData());
             }else {
                 isSend = clientSend2UMPS(acceptResult.getData(), GatewayConstant.CLIENT_OUTBOUND_CHANNEL);
             }
@@ -232,6 +225,8 @@ public class CpicServiceImpl implements CpicService {
         } else {
             acceptResult.setData(data);
         }
+//        ThreadUtil.sleep(1000);
+
         SystemLogger.info("send Msg back ,msg = {0}", new String(data, StandardCharsets.US_ASCII));
         this.sendMsg2Union(acceptResult);
     }
@@ -257,7 +252,7 @@ public class CpicServiceImpl implements CpicService {
 
     public static boolean server2UMPS(byte[] data){
         Message<byte[]> message = MessageBuilder.withPayload(data)
-                .setHeader(IpHeaders.CONNECTION_ID, GatewayConstant.IP_CONNECTION_ID.get())
+                .setHeader(IpHeaders.CONNECTION_ID, GatewayConstant.SERVER_CONNECTION_ID.get())
                 .build();
         GatewayConstant.SERVER_OUTBOUND_CHANNEL.send(message);
         return true;

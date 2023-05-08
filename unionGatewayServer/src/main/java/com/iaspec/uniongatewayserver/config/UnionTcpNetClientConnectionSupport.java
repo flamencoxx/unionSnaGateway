@@ -18,7 +18,6 @@ import java.io.InputStream;
 import java.io.PushbackInputStream;
 import java.net.*;
 import java.util.Optional;
-import java.util.function.Function;
 
 /**
  * @author Flamenco.xxx
@@ -68,10 +67,10 @@ public class UnionTcpNetClientConnectionSupport extends AbstractTcpConnectionSup
         } catch (ConnectException e){
             SystemLogger.error("Occur error(ConnectException) when create Socket,Fail to bind port or host,e.message={0}",new String[]{e.getMessage()},e);
             SystemLogger.error("Fail to connect to UMPS , close System");
-            if (StringUtils.isBlank(GatewayConstant.IP_CONNECTION_ID.get()) && GatewayConstant.SERVER_OPEN_CONNECT_TIMES.get() == 0) {
+            if (StringUtils.isBlank(GatewayConstant.SERVER_CONNECTION_ID.get()) && GatewayConstant.SERVER_OPEN_CONNECT_TIMES.get() == 0) {
                 ThreadUtil.sleep(5000);
             }
-            if(StringUtils.isBlank(GatewayConstant.IP_CONNECTION_ID.get())){
+            if(StringUtils.isBlank(GatewayConstant.SERVER_CONNECTION_ID.get())){
                 SystemLogger.error("Union Gateway Server Connect is close,client miss connect exception",new String[]{e.getMessage()},e);
                 CommandUtils.runAbnormalShellWithFunc(ExceptionEnum.SOCKET_CONNECT_EXCEPTION.getMsg(), s -> {
                     SystemLogger.error("Abnormal shell fail to run,error msg : {0}",s);
@@ -81,10 +80,10 @@ public class UnionTcpNetClientConnectionSupport extends AbstractTcpConnectionSup
             }
         }catch(SocketException e){
             SystemLogger.error("Occur error(SocketException) when create Socket Connection, e,message= {0}", new String[]{e.getMessage()}, e);
-            if (StringUtils.isBlank(GatewayConstant.IP_CONNECTION_ID.get()) && GatewayConstant.SERVER_OPEN_CONNECT_TIMES.get() == 0) {
+            if (StringUtils.isBlank(GatewayConstant.SERVER_CONNECTION_ID.get()) && GatewayConstant.SERVER_OPEN_CONNECT_TIMES.get() == 0) {
                 ThreadUtil.sleep(5000);
             }
-            if(StringUtils.isBlank(GatewayConstant.IP_CONNECTION_ID.get())){
+            if(StringUtils.isBlank(GatewayConstant.SERVER_CONNECTION_ID.get())){
                 SystemLogger.error("Union Gateway Server Connect is close,client miss socket exception",new String[]{e.getMessage()},e);
                 CommandUtils.runAbnormalShellWithFunc(ExceptionEnum.SOCKET_EXCEPTION.getMsg(), s -> {
                     SystemLogger.error("Abnormal shell fail to run,error msg : {0}",s);

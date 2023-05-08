@@ -3,9 +3,12 @@ package com.iaspec.uniongatewayserver.util;
 import com.iaspec.uniongatewayserver.constant.GatewayConstant;
 import com.iaspec.uniongatewayserver.model.ExceptionEnum;
 import com.iaspec.uniongatewayserver.model.ExitCodeEnum;
+import org.apache.commons.lang3.StringUtils;
 
+import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author Flamenco.xxx
@@ -49,10 +52,29 @@ public class ExitSystemUtil {
         }
     }
 
-    public static void closeFactoryStream(){
-        if(GatewayConstant.SERVER_FACTORY.isRunning() && GatewayConstant.SERVER_FACTORY.getConnection().isOpen()){
-//            GatewayConstant.SERVER_FACTORY.getConnection().shutdownInput();
-//            GatewayConstant.SERVER_OUTBOUND_CHANNEL.getQueueSize()
+    public static void closeFactorysConnect(){
+        AtomicLong waitTime = new AtomicLong(0);
+        try {
+            if (GatewayConstant.CLIENT_FACTORY.isRunning() && GatewayConstant.CLIENT_FACTORY.getConnection()
+                    .isOpen() && GatewayConstant.SERVER_FACTORY.isRunning()) {
+                GatewayConstant.CLIENT_FACTORY.getConnection().shutdownInput();
+                if(GatewayConstant.CLIENT_INBOUND_CHANNEL.getQueueSize() != 0 || GatewayConstant.SERVER_INBOUND_CHANNEL.getQueueSize() != 0){
+                    SystemLogger.info("Client or Server channel have {0} Message, waiting 3 second to handle msg",GatewayConstant.CLIENT_INBOUND_CHANNEL.getQueueSize() + GatewayConstant.SERVER_INBOUND_CHANNEL.getQueueSize());
+                    waitTime.set(15000);
+                }else {
+                    GatewayConstant.CLIENT_FACTORY.getConnection().shutdownOutput();
+                }
+
+                ThreadUtil.sleep(waitTime.get());
+                SystemLogger.info("waiting end,close Client and Server Connect");
+                GatewayConstant.CLIENT_FACTORY.getConnection().shutdownOutput();
+                GatewayConstant.CLIENT_FACTORY.closeConnection(GatewayConstant.CLIENT_CONNECTION_ID.get());
+                GatewayConstant.SERVER_FACTORY.closeConnection(GatewayConstant.SERVER_CONNECTION_ID.get());
+
+            }
+        } catch (Throwable e) {
+            SystemLogger.error("Occur a error when close client factory connect",new String[]{e.getMessage()},e);
         }
+
     }
 }

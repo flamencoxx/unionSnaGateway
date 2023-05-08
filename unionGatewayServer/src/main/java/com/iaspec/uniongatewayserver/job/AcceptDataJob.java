@@ -6,6 +6,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.iaspec.uniongatewayserver.service.CpicService;
 import com.iaspec.uniongatewayserver.service.PropertyService;
 import com.iaspec.uniongatewayserver.util.CommandUtils;
+import com.iaspec.uniongatewayserver.util.ExitSystemUtil;
 import com.iaspec.uniongatewayserver.util.SystemLogger;
 import com.iaspec.uniongatewayserver.util.ThreadUtil;
 import org.springframework.boot.ApplicationArguments;
@@ -43,12 +44,21 @@ public class AcceptDataJob implements ApplicationRunner {
         SystemLogger.infoMethod(getClass(), "run", true, new String[]{"args"}, args);
         try {
 
-
-/*
-         为了模拟测试环境暂时注释，后续需要打开
- */
+//            为了模拟测试环境暂时注释，后续需要打开
 //            cpicService.acceptMessageFromMainFrame();
 
+//            new Thread(() -> {
+//                ThreadUtil.sleep(10000);
+//                ExitSystemUtil.closeFactorysConnect();
+//            }).start();
+
+        } catch (Exception e) {
+            SystemLogger.error("Occurs error in run Accept SNA Data-task, e.message = {0}", new String[]{e.getMessage()}, e);
+        } finally {
+            SystemLogger.infoMethod(getClass(), "run", false, new String[]{"args"}, args);
+        }
+    }
+}
 
 //            ThreadUtil.sleep(40 * 1000);
 //            for (int i = 0; i < 4; i++) {
@@ -61,21 +71,3 @@ public class AcceptDataJob implements ApplicationRunner {
 //                });
 //
 //            }
-
-//            new Thread(() -> {
-//                ThreadUtil.sleep(10000);
-//                try {
-//                    CommandUtils.runAbnormalShell("Test Abnormal,Exception");
-//                } catch (Exception e) {
-//                    SystemLogger.error(e.getMessage());
-//                    throw new RuntimeException(e);
-//                }
-//            }).start();
-
-        } catch (Exception e) {
-            SystemLogger.error("Occurs error in run Accept SNA Data-task, e.message = {0}", new String[]{e.getMessage()}, e);
-        } finally {
-            SystemLogger.infoMethod(getClass(), "run", false, new String[]{"args"}, args);
-        }
-    }
-}
