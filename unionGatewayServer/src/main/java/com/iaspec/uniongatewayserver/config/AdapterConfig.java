@@ -30,7 +30,7 @@ public class AdapterConfig {
         TcpNetClientConnectionFactory factory = applicationContext.getBean(GatewayConstant.CLIENT_FACTORY_NAME, TcpNetClientConnectionFactory.class);
         adapter.setConnectionFactory(factory);
         adapter.setOutputChannelName("unionClientInboundChannel");
-        adapter.setErrorChannelName("errorChannel");
+        adapter.setErrorChannel(GatewayConstant.ERROR_CHANNEL);
         adapter.setClientMode(false);
         return adapter;
     }

@@ -50,14 +50,15 @@
     <int-ip:tcp-outbound-channel-adapter
             id="unionServerOutboundAdapter"
             channel="unionServerOutboundChannel"
-            client-mode="false"
+            client-mode="true"
+            retry-interval="5000"
             connection-factory="unionServerFactory"/>
 
 
 
 
     <bean id="unionServerMessageHandle"
-          class="com.iaspec.uniongatewayserver.UnionServer.UnionServerMessageHandle"/>
+          class="com.iaspec.uniongatewayserver.unionHandle.UnionServerMessageHandle"/>
 
 <!--    error-->
 
@@ -70,7 +71,7 @@
     </int:service-activator>
 
     <bean id="errorHandle"
-          class="com.iaspec.uniongatewayserver.UnionServer.ErrorHandler"/>
+          class="com.iaspec.uniongatewayserver.unionHandle.ErrorHandler"/>
 
 
 

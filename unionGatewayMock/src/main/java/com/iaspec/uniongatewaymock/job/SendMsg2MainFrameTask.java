@@ -9,6 +9,7 @@ import com.iaspec.uniongatewaymock.constant.GatewayConstant;
 import com.iaspec.uniongatewaymock.controller.SendTestController;
 import com.iaspec.uniongatewaymock.model.Holder;
 import com.iaspec.uniongatewaymock.model.ListBalance;
+import com.iaspec.uniongatewaymock.util.SystemLogger;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +62,13 @@ public class SendMsg2MainFrameTask {
     }
 
     @Scheduled(cron = "${jobCron}")
-    private void sendMsg2MainFrameTask() {
+    private void sendMsg2MainFrameTask() throws InterruptedException {
+
+        if(!GatewayConstant.clientFactory.getConnection().isOpen()){
+            SystemLogger.info("client connect is not open, connectId is {0}",GatewayConstant.mockServerConnectionId);
+            return;
+        }
+
         String id = IdUtil.getSnowflakeNextIdStr();
         String content = randomWord();
         if(StringUtils.isNotBlank(msgContent)){

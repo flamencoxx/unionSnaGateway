@@ -4,8 +4,7 @@ import cn.hutool.core.date.TimeInterval;
 import com.google.common.collect.Maps;
 import com.iaspec.uniongatewaymock.util.CommonUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.integration.ip.tcp.connection.TcpConnection;
-import org.springframework.integration.ip.tcp.connection.TcpNetClientConnectionFactory;
+import org.springframework.integration.ip.tcp.connection.*;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
@@ -39,7 +38,9 @@ public class GatewayConstant {
 
     public static int SERVER_REMOTE_PORT = 0;
 
-    public static TcpNetClientConnectionFactory clientFactory;
+    public static TcpNioClientConnectionFactory clientFactory;
+
+    public static TcpNioServerConnectionFactory serverFactory;
 
     public static TcpConnection clientConnect;
 

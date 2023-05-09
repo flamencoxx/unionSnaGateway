@@ -12,10 +12,7 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.DependsOn;
-import org.springframework.integration.ip.tcp.connection.TcpConnectionSupport;
-import org.springframework.integration.ip.tcp.connection.TcpNetClientConnectionFactory;
-import org.springframework.integration.ip.tcp.connection.TcpNetServerConnectionFactory;
-import org.springframework.integration.ip.tcp.connection.TcpNioServerConnectionFactory;
+import org.springframework.integration.ip.tcp.connection.*;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ArrayBlockingQueue;
@@ -61,7 +58,8 @@ public class RecordJob implements ApplicationRunner {
         TcpNioServerConnectionFactory serverFactory = applicationContext.getBean("unionMockServerFactory", TcpNioServerConnectionFactory.class);
         serverFactory.registerSender(new UnionMockServerSender());
 
-//        GatewayConstant.clientFactory = applicationContext.getBean("unionMockClientFactory", TcpNetClientConnectionFactory.class);
+        GatewayConstant.clientFactory = applicationContext.getBean("unionMockClientFactory", TcpNioClientConnectionFactory.class);
+        GatewayConstant.serverFactory = applicationContext.getBean("unionMockServerFactory", TcpNioServerConnectionFactory.class);
 //        GatewayConstant.clientConnect = GatewayConstant.clientFactory.getConnection();
 //
         isSend = true;

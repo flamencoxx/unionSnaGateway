@@ -83,6 +83,10 @@ public class ConcurrentSendMsgTest {
 
         try {
 
+            if(!GatewayConstant.clientFactory.getConnection().isOpen()){
+                SystemLogger.info("client connect is not open, connectId is {0}",GatewayConstant.mockServerConnectionId);
+                return;
+            }
             for (int i = 0; i < concurrentNum; i++) {
                 aSendTimes.incrementAndGet();
                 if (aSendTimes.get() > sendTimes){

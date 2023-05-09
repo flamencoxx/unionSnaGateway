@@ -26,17 +26,16 @@ public class UnionEventHandler {
 
         try {
             TcpConnectionEvent tcpConnectionEvent = message.getPayload();
-            if(tcpConnectionEvent instanceof TcpConnectionExceptionEvent){
-                TcpConnectionExceptionEvent tcpConnectionExceptionEvent = (TcpConnectionExceptionEvent) tcpConnectionEvent;
-//                SystemLogger.error("into tcpConnectException : type is {0}",tcpConnectionExceptionEvent.getSource().getClass().getName());
-//                SystemLogger.info("exception info : {0}", tcpConnectionExceptionEvent.getSource()
-//                        .toString());
-                if (StringUtils.equals(tcpConnectionExceptionEvent.getConnectionFactoryName(), GatewayConstant.SERVER_FACTORY_NAME)) {
-                    SystemLogger.error("ServerFactory connect miss exception, exception type : {0} ,errorMsg : {1}, error source : {2}",new String[]{tcpConnectionExceptionEvent.getCause().getClass().getName(),tcpConnectionExceptionEvent.getCause().getMessage(),tcpConnectionExceptionEvent.getSource().toString()},tcpConnectionExceptionEvent.getCause());
-                }else {
-                    SystemLogger.error("ClientFactory connect miss exception");
-                }
-            }
+//            if(tcpConnectionEvent instanceof TcpConnectionExceptionEvent){
+//                TcpConnectionExceptionEvent tcpConnectionExceptionEvent = (TcpConnectionExceptionEvent) tcpConnectionEvent;
+//                SystemLogger.error("into tcpConnectException : type is {0}",tcpConnectionExceptionEvent.getCause().getClass().toString());
+//                SystemLogger.error("exception info : {0}", tcpConnectionEvent.getCause().getMessage());
+//                if (StringUtils.equals(tcpConnectionExceptionEvent.getConnectionFactoryName(), GatewayConstant.SERVER_FACTORY_NAME)) {
+//                    SystemLogger.error("ServerFactory connect miss exception, exception type : {0} ,errorMsg : {1}, error source : {2}",new String[]{tcpConnectionExceptionEvent.getCause().getClass().getName(),tcpConnectionExceptionEvent.getCause().getMessage(),tcpConnectionExceptionEvent.getSource().toString()},tcpConnectionExceptionEvent.getCause());
+//                }else {
+//                    SystemLogger.error("ClientFactory connect miss exception");
+//                }
+//            }
 
             TcpConnection con = ((TcpConnection) tcpConnectionEvent.getSource());
             int localPort = con.getSocketInfo()

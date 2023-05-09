@@ -12,7 +12,7 @@ import org.springframework.integration.ip.tcp.connection.TcpSender;
  */
 public class UnionServerTcpSender implements TcpSender {
     @Override
-    public void addNewConnection(TcpConnection con) {
+    public synchronized void addNewConnection(TcpConnection con) {
         try {
             GatewayConstant.isServerConnect = true;
             GatewayConstant.SERVER_REMOTE_HOST = con.getHostAddress();
@@ -31,7 +31,7 @@ public class UnionServerTcpSender implements TcpSender {
     }
 
     @Override
-    public void removeDeadConnection(TcpConnection con) {
+    public synchronized void removeDeadConnection(TcpConnection con) {
 
         try {
             GatewayConstant.isServerConnect = false;
