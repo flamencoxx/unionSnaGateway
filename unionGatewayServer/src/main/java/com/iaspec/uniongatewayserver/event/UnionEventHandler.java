@@ -41,7 +41,13 @@ public class UnionEventHandler {
             int localPort = con.getSocketInfo()
                     .getLocalPort();
 
-//            gatewayService.handleServerConnectionEvent(tcpConnectionEvent,con);
+            if (con.getSocketInfo().getLocalPort() ==  GatewayConstant.SERVER_LOCAL_PORT) {
+                gatewayService.handleServerConnectionEvent(tcpConnectionEvent,con);
+            }else {
+                gatewayService.handleClientConnectionEvent(tcpConnectionEvent,con);
+            }
+
+
 
 
         } catch (Exception e) {

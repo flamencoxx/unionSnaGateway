@@ -66,15 +66,14 @@ public class PropertyServiceImpl implements PropertyService, BeanNameAware {
             GatewayConstantLoader.reloadProperties(this);
 
 
-            int serverPort = this.getIntegerValue(GatewayConstant.PROP_KEY_SERVER_PORT, 0);
-            GatewayConstant.SERVER_LOCAL_PORT = serverPort;
+            GatewayConstant.SERVER_LOCAL_PORT = this.getIntegerValue(GatewayConstant.PROP_KEY_SERVER_PORT, 0);
             GatewayConstant.SERVER_LOCAL_HOST = InetAddress.getLocalHost()
                     .getHostAddress();
             GatewayConstant.SERVER_FACTORY = applicationContext.getBean(GatewayConstant.SERVER_FACTORY_NAME, AbstractServerConnectionFactory.class);
             GatewayConstant.SERVER_INBOUND_CHANNEL = applicationContext.getBean("unionServerInboundChannel", QueueChannel.class);
             GatewayConstant.SERVER_OUTBOUND_CHANNEL = applicationContext.getBean("unionServerOutboundChannel", MessageChannel.class);
 
-            GatewayConstant.SERVER_FACTORY.registerSender(new UnionServerTcpSender());
+//            GatewayConstant.SERVER_FACTORY.registerSender(new UnionServerTcpSender());
 
             GatewayConstant.CLIENT_REMOTE_HOST = this.getStringValue(GatewayConstant.PROP_KEY_CLIENT_REMOTE_HOST, StringUtils.EMPTY);
             GatewayConstant.CLIENT_REMOTE_PORT = this.getIntegerValue(GatewayConstant.PROP_KEY_CLIENT_REMOTE_PORT, 0);
@@ -84,7 +83,7 @@ public class PropertyServiceImpl implements PropertyService, BeanNameAware {
             GatewayConstant.CLIENT_INBOUND_CHANNEL = applicationContext.getBean("unionClientInboundChannel", QueueChannel.class);
             GatewayConstant.CLIENT_OUTBOUND_CHANNEL = applicationContext.getBean("unionClientOutboundChannel", MessageChannel.class);
 
-            GatewayConstant.CLIENT_FACTORY.registerSender(new UnionClientTcpSender());
+//            GatewayConstant.CLIENT_FACTORY.registerSender(new UnionClientTcpSender());
             GatewayConstant.CLIENT_FACTORY.setTcpSocketFactorySupport(new UnionTcpNetSocketFactorySupport());
             GatewayConstant.CLIENT_FACTORY.setTcpNetConnectionSupport(new UnionTcpNetClientConnectionSupport());
 

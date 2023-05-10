@@ -54,43 +54,15 @@ public class UnionTcpNetClientConnectionSupport extends AbstractTcpConnectionSup
         } catch (UnknownHostException e) {
             SystemLogger.error("Occur error(UnknownHostException) when create Socket Connection, e,message= {0}", new String[]{e.getMessage()}, e);
             throw new RuntimeException(e);
-        } catch(BindException e){
+        } catch (BindException e) {
 //            本地端口或对方server端口绑定失败关闭系统
-            SystemLogger.error("Occur error(BindException) when create Socket,Fail to bind port or host,e.message={0}",new String[]{e.getMessage()},e);
-            SystemLogger.error("Fail to Bind port , close System");
-            CommandUtils.runAbnormalShellWithFunc(ExceptionEnum.BIND_EXCEPTION.getMsg(), s -> {
-                SystemLogger.error("Abnormal shell fail to run,error msg : {0}",s);
-                return null;
-            });
-            ExitSystemUtil.exitSystem(ExceptionEnum.BIND_EXCEPTION, ExceptionEnum.BIND_EXCEPTION.getMsg());
-
-        } catch (ConnectException e){
-            SystemLogger.error("Occur error(ConnectException) when create Socket,Fail to bind port or host,e.message={0}",new String[]{e.getMessage()},e);
-            SystemLogger.error("Fail to connect to UMPS , close System");
-            if (StringUtils.isBlank(GatewayConstant.SERVER_CONNECTION_ID.get()) && GatewayConstant.SERVER_OPEN_CONNECT_TIMES.get() == 0) {
-                ThreadUtil.sleep(5000);
-            }
-            if(StringUtils.isBlank(GatewayConstant.SERVER_CONNECTION_ID.get())){
-                SystemLogger.error("Union Gateway Server Connect is close,client miss connect exception",new String[]{e.getMessage()},e);
-                CommandUtils.runAbnormalShellWithFunc(ExceptionEnum.SOCKET_CONNECT_EXCEPTION.getMsg(), s -> {
-                    SystemLogger.error("Abnormal shell fail to run,error msg : {0}",s);
-                    return null;
-                });
-                ExitSystemUtil.exitSystem(ExceptionEnum.SOCKET_CONNECT_EXCEPTION, ExceptionEnum.SOCKET_CONNECT_EXCEPTION.getMsg());
-            }
-        }catch(SocketException e){
-            SystemLogger.error("Occur error(SocketException) when create Socket Connection, e,message= {0}", new String[]{e.getMessage()}, e);
-            if (StringUtils.isBlank(GatewayConstant.SERVER_CONNECTION_ID.get()) && GatewayConstant.SERVER_OPEN_CONNECT_TIMES.get() == 0) {
-                ThreadUtil.sleep(5000);
-            }
-            if(StringUtils.isBlank(GatewayConstant.SERVER_CONNECTION_ID.get())){
-                SystemLogger.error("Union Gateway Server Connect is close,client miss socket exception",new String[]{e.getMessage()},e);
-                CommandUtils.runAbnormalShellWithFunc(ExceptionEnum.SOCKET_EXCEPTION.getMsg(), s -> {
-                    SystemLogger.error("Abnormal shell fail to run,error msg : {0}",s);
-                    return null;
-                });
-                ExitSystemUtil.exitSystem(ExceptionEnum.SOCKET_EXCEPTION, ExceptionEnum.SOCKET_EXCEPTION.getMsg());
-            }
+            handleClientException(ExceptionEnum.BIND_EXCEPTION, true, e.getClass().getName(), e.getMessage(), e);
+        } catch (ConnectException e) {
+            handleClientException(ExceptionEnum.SOCKET_CONNECT_EXCEPTION,true,e.getClass().getName(),e.getMessage(),e);
+        } catch (SocketTimeoutException e) {
+            handleClientException(ExceptionEnum.SOCKET_CONNECT_TIMEOUT,false,e.getClass().getName(),e.getMessage(),e);
+        } catch (SocketException e) {
+            handleClientException(ExceptionEnum.SOCKET_EXCEPTION, true, e.getClass().getName(), e.getMessage(), e);
         } catch (IOException e) {
             SystemLogger.error("Occur error(IOException) when create Socket Connection, e,message= {0}", new String[]{e.getMessage()}, e);
             throw new RuntimeException(e);
@@ -102,18 +74,26 @@ public class UnionTcpNetClientConnectionSupport extends AbstractTcpConnectionSup
         } else {
             return socketOp.map(value -> new TcpNetConnection(value, server, lookupHost, applicationEventPublisher, connectionFactoryName))
                     .orElseGet(() -> {
-                        SystemLogger.error("Creat TcpNetConnection failure,Prepare to close system");
-                        CommandUtils.runAbnormalShellWithFunc(ExceptionEnum.CREAT_TCP_CONNECTION_EXCEPTION.getMsg(), s -> {
-                            SystemLogger.error("Abnormal shell fail to run,error msg : {0}",s);
-                            return null;
-                        });
-                        ExitSystemUtil.exitSystem(ExceptionEnum.CREAT_TCP_CONNECTION_EXCEPTION,"Socket params is Empty");
+                        handleClientException(ExceptionEnum.CREAT_TCP_CONNECTION_EXCEPTION, true, "CreatSocketFailure", "Creat TcpNetConnection failure,Socket params is Empty,Prepare to close system", new Throwable());
                         return null;
                     });
 
         }
     }
 
+    private void handleClientException(ExceptionEnum exceptionEnum,boolean isShutdown,String errorType,String errorMsg,Throwable e) {
+        SystemLogger.error("Occur {0} when create Socket Connection, e,message= {1}", new String[]{errorType,e.getMessage()}, e);
+        if (StringUtils.isNotBlank(errorMsg)){
+            SystemLogger.error(errorMsg);
+        }
+        CommandUtils.runAbnormalShellWithFunc(exceptionEnum.getMsg(), s -> {
+            SystemLogger.error("Abnormal shell fail to run,error msg : {0}", s);
+            return null;
+        });
+        if (isShutdown){
+            ExitSystemUtil.exitSystem(exceptionEnum, exceptionEnum.getMsg());
+        }
+    }
 
 
     private void settingsSocket(Socket sourceSocket, Socket destSocket) throws SocketException {
@@ -123,15 +103,15 @@ public class UnionTcpNetClientConnectionSupport extends AbstractTcpConnectionSup
         if (sourceSocket.getSendBufferSize() > 0) {
             destSocket.setSendBufferSize(sourceSocket.getSendBufferSize());
         }
-        if(sourceSocket.getReceiveBufferSize() > 0) {
+        if (sourceSocket.getReceiveBufferSize() > 0) {
             destSocket.setReceiveBufferSize(sourceSocket.getReceiveBufferSize());
         }
         destSocket.setKeepAlive(sourceSocket.getKeepAlive());
         destSocket.setTcpNoDelay(sourceSocket.getTcpNoDelay());
-        if(sourceSocket.getSoLinger() >= 0){
+        if (sourceSocket.getSoLinger() >= 0) {
             destSocket.setSoLinger(true, sourceSocket.getSoLinger());
         }
-        if(sourceSocket.getTrafficClass() >= 0){
+        if (sourceSocket.getTrafficClass() >= 0) {
             destSocket.setTrafficClass(sourceSocket.getTrafficClass());
         }
 

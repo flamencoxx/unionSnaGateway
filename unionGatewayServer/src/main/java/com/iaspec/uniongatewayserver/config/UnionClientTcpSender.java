@@ -12,7 +12,7 @@ import org.springframework.integration.ip.tcp.connection.TcpSender;
  */
 public class UnionClientTcpSender implements TcpSender {
     @Override
-    public synchronized void addNewConnection(TcpConnection con) {
+    public void addNewConnection(TcpConnection con) {
         GatewayConstant.isClientConnect = true;
         GatewayConstant.CLIENT_OPEN_CONNECT_TIMES.getAndIncrement();
         GatewayConstant.CLIENT_CONNECTION_ID.set(con.getConnectionId());
@@ -24,7 +24,7 @@ public class UnionClientTcpSender implements TcpSender {
     }
 
     @Override
-    public synchronized void removeDeadConnection(TcpConnection con) {
+    public void removeDeadConnection(TcpConnection con) {
         try {
             TcpSender.super.removeDeadConnection(con);
             GatewayConstant.isClientConnect = false;

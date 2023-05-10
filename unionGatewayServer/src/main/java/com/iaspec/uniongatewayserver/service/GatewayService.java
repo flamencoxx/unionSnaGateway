@@ -13,4 +13,6 @@ public interface GatewayService {
 
     void handleServerConnectionEvent(TcpConnectionEvent tcpConnectionEvent, TcpConnection con) throws ServiceException;
 
+    void handleClientConnectionEvent(TcpConnectionEvent tcpConnectionEvent, TcpConnection con) throws ServiceException;
+
 }

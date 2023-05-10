@@ -31,6 +31,7 @@
         <property name="singleUse" value="false"/>
         <property name="soLinger" value="10000"/>
         <property name="soKeepAlive" value="true"/>
+        <property name="connectTimeout" value="5000"/>
     </bean>
 
 

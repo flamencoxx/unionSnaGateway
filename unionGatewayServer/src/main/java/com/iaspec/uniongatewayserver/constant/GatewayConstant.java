@@ -128,7 +128,7 @@ public class GatewayConstant {
     public static final AtomicBoolean isDuplex = new AtomicBoolean(false);
 
 
-    public static final ListBalance<Function<byte[], Boolean>> SEND_FUNC = new ListBalance<>(Lists.newArrayList(CpicServiceImpl::server2UMPS, CpicServiceImpl::client2UMPS));
+    public static final ListBalance<Function<byte[], Boolean>> SEND_FUNC = new ListBalance<>(Lists.newArrayList(CpicServiceImpl::client2UMPS,CpicServiceImpl::server2UMPS));
 
 
     // ======================================================================================

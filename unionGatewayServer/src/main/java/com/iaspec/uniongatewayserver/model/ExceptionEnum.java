@@ -20,6 +20,8 @@ public enum ExceptionEnum {
 
     SOCKET_EXCEPTION("socket creat or connect failure"),
 
+    SOCKET_CONNECT_TIMEOUT("socket connect timeout"),
+
     SYSTEM_NAME_EMPTY("Missing key parameters system dest name,please check"),
 
     WHITE_LIST_EMPTY("Missing key parameters white list,please check")
