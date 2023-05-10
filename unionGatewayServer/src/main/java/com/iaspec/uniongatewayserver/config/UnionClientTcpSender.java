@@ -25,15 +25,20 @@ public class UnionClientTcpSender implements TcpSender {
 
     @Override
     public synchronized void removeDeadConnection(TcpConnection con) {
-        TcpSender.super.removeDeadConnection(con);
-        GatewayConstant.isClientConnect = false;
-        GatewayConstant.CLIENT_CLOSE_CONNECT_TIMES.getAndIncrement();
-        GatewayConstant.CLIENT_CONNECTION_ID.set(StringUtils.EMPTY);
-        SystemLogger.info("UMPS and gateway Client disconnect, UMPS : {0} : {1} disconnect with Gateway: {2} : {3},  connectId : {4}",
-                con.getSocketInfo().getInetAddress().getHostAddress(),
-                con.getSocketInfo().getPort(),
-                con.getSocketInfo().getLocalAddress(),
-                con.getSocketInfo().getLocalPort(),
-                GatewayConstant.SERVER_CONNECTION_ID);
+        try {
+            TcpSender.super.removeDeadConnection(con);
+            GatewayConstant.isClientConnect = false;
+            GatewayConstant.CLIENT_CLOSE_CONNECT_TIMES.getAndIncrement();
+            GatewayConstant.CLIENT_CONNECTION_ID.set(StringUtils.EMPTY);
+            GatewayConstant.CLIENT_FACTORY.getConnection().close();
+            SystemLogger.info("UMPS and gateway Client disconnect, UMPS : {0} : {1} disconnect with Gateway: {2} : {3},  connectId : {4}",
+                    con.getSocketInfo().getInetAddress().getHostAddress(),
+                    con.getSocketInfo().getPort(),
+                    con.getSocketInfo().getLocalAddress(),
+                    con.getSocketInfo().getLocalPort(),
+                    GatewayConstant.SERVER_CONNECTION_ID);
+        } catch (Throwable e) {
+            SystemLogger.error("Occur a error when client remove dead connection, error message: {0}",e.getMessage());
+        }
     }
 }

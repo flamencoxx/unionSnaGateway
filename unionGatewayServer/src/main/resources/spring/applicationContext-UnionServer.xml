@@ -50,8 +50,7 @@
     <int-ip:tcp-outbound-channel-adapter
             id="unionServerOutboundAdapter"
             channel="unionServerOutboundChannel"
-            client-mode="true"
-            retry-interval="5000"
+            client-mode="false"
             connection-factory="unionServerFactory"/>
 
 
