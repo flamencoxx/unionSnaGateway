@@ -133,6 +133,10 @@ public class GatewayConstant {
 
     // ======================================================================================
 
+    public static final String ClIENT_EXECUTOR_NAME = "clientExecutor";
+
+    public static final String SERVER_EXECUTOR_NAME = "serverExecutor";
+
     public static final String PROP_KEY_CLIENT_REMOTE_HOST = "client.remote.host";
 
     public static final String PROP_KEY_CLIENT_REMOTE_PORT = "client.remote.port";
