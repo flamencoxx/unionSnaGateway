@@ -87,6 +87,8 @@ public class PropertyServiceImpl implements PropertyService, BeanNameAware {
             GatewayConstant.CLIENT_FACTORY.setTcpSocketFactorySupport(new UnionTcpNetSocketFactorySupport());
             GatewayConstant.CLIENT_FACTORY.setTcpNetConnectionSupport(new UnionTcpNetClientConnectionSupport());
 
+
+            GatewayConstant.CLIENT_INBOUND_CHANNEL_ADAPTER = applicationContext.getBean("unionClientInboundAdapter", TcpReceivingChannelAdapter.class);
             GatewayConstant.ERROR_CHANNEL = applicationContext.getBean("errorChannel", MessageChannel.class);
 
 

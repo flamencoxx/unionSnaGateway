@@ -126,12 +126,13 @@ public class GatewayServiceImpl implements GatewayService {
 
             SystemLogger.info("umps and gateway Client disconnect, UMPS : {0} : {1} disconnect with Gateway: {2} : {3},  connectId : {4}",remoteHost,remoterPort,localHost,localPort,GatewayConstant.CLIENT_CONNECTION_ID);
             GatewayConstant.CLIENT_CONNECTION_ID.set(StringUtils.EMPTY);
-            GatewayConstant.CLIENT_FACTORY = applicationContext.getBean(GatewayConstant.CLIENT_FACTORY_NAME, UnionTcpNetClientConnectionFactory.class);
             GatewayConstant.CLIENT_FACTORY.closeConnection(GatewayConstant.CLIENT_CONNECTION_ID.get());
-            if(GatewayConstant.CLIENT_FACTORY.getConnection().isOpen()){
-                SystemLogger.error("client connect failure,try close again");
-                GatewayConstant.CLIENT_FACTORY.getConnection().close();
-            }
+            GatewayConstant.CLIENT_INBOUND_CHANNEL_ADAPTER.stop();
+//            GatewayConstant.CLIENT_FACTORY = applicationContext.getBean(GatewayConstant.CLIENT_FACTORY_NAME, UnionTcpNetClientConnectionFactory.class);
+//            if(GatewayConstant.CLIENT_FACTORY.getConnection().isOpen()){
+//                SystemLogger.error("client connect failure,try close again");
+//                GatewayConstant.CLIENT_FACTORY.getConnection().close();
+//            }
 
         } catch (Exception e) {
             SystemLogger.error("Occur a error when handleUnionClientClosedConnectionEvent msg : {0}",e.getMessage());

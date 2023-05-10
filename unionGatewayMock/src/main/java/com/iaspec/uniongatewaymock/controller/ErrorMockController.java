@@ -5,6 +5,7 @@ import com.iaspec.uniongatewaymock.constant.GatewayConstant;
 import com.iaspec.uniongatewaymock.util.SystemLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -53,14 +54,19 @@ public class ErrorMockController {
     }
 
     @RequestMapping(value = "shutdownServerFactory",method = RequestMethod.POST)
-    public void shutdownServerFactory(){
-        GatewayConstant.serverFactory.stop();
+    public ResponseEntity<Boolean> shutdownServerFactory(){
+        SystemLogger.info("shutdown mock server connection ,connectionId : {0}",GatewayConstant.mockServerConnectionId);
+        SystemLogger.info("server ConnectionIdList : {0}",GatewayConstant.serverFactory.getOpenConnectionIds().toString());
+        GatewayConstant.serverFactory.closeConnection(GatewayConstant.mockServerConnectionId);
+        SystemLogger.info("server after ConnectionIdList : {0}",GatewayConstant.serverFactory.getOpenConnectionIds().toString());
+        return ResponseEntity.ok(true);
     }
 
     @RequestMapping(value = "closeServerConnect",method = RequestMethod.POST)
-    public void closeServerConnect(){
+    public ResponseEntity<Boolean> closeServerConnect(){
         SystemLogger.info("into closeServerConnect connect id : {0}",GatewayConstant.mockServerConnectionId);
         GatewayConstant.serverFactory.closeConnection(GatewayConstant.mockServerConnectionId);
+        return ResponseEntity.ok(true);
     }
 
 

@@ -45,9 +45,6 @@ public class UnionTcpNetClientConnectionSupport extends AbstractTcpConnectionSup
             customSocket = new Socket(host, port, localHost, localPort);
             settingsSocket(socket, customSocket);
             socketOp = Optional.of(customSocket);
-
-            SystemLogger.info("Gateway Client Create New Connection, host={0}, port={1}, localHost={2}, localPort={3}", host, port, localHost, localPort);
-
         } catch (NullPointerException e) {
             SystemLogger.error("Occurs error when create Socket, socket Object is null", new String[]{StringUtils.EMPTY}, new Throwable("socket Object is null"));
             throw new RuntimeException(e);

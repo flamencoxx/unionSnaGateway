@@ -1,6 +1,7 @@
 package com.iaspec.uniongatewayserver.config;
 
 import com.iaspec.uniongatewayserver.constant.GatewayConstant;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.*;
@@ -16,7 +17,7 @@ import org.springframework.integration.ip.tcp.connection.TcpNetClientConnectionF
  */
 @Configuration
 @EnableIntegration
-public class AdapterConfig {
+public class AdapterConfig implements InitializingBean {
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -33,6 +34,11 @@ public class AdapterConfig {
         adapter.setErrorChannel(GatewayConstant.ERROR_CHANNEL);
         adapter.setClientMode(false);
         return adapter;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+//        GatewayConstant.CLIENT_INBOUND_CHANNEL_ADAPTER = unionClientInboundAdapter();
     }
 
 //    @Bean(name = "unionServerOutboundAdapter")
