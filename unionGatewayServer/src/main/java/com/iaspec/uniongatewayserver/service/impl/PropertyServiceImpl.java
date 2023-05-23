@@ -62,7 +62,6 @@ public class PropertyServiceImpl implements PropertyService, BeanNameAware {
                 allProp.putAll(clsProp);
             }
             LogAllProp();
-
             GatewayConstantLoader.reloadProperties(this);
 
 
@@ -73,7 +72,7 @@ public class PropertyServiceImpl implements PropertyService, BeanNameAware {
             GatewayConstant.SERVER_INBOUND_CHANNEL = applicationContext.getBean("unionServerInboundChannel", QueueChannel.class);
             GatewayConstant.SERVER_OUTBOUND_CHANNEL = applicationContext.getBean("unionServerOutboundChannel", MessageChannel.class);
 
-//            GatewayConstant.SERVER_FACTORY.registerSender(new UnionServerTcpSender());
+            GatewayConstant.SERVER_FACTORY.registerSender(new UnionServerTcpSender());
 
             GatewayConstant.CLIENT_REMOTE_HOST = this.getStringValue(GatewayConstant.PROP_KEY_CLIENT_REMOTE_HOST, StringUtils.EMPTY);
             GatewayConstant.CLIENT_REMOTE_PORT = this.getIntegerValue(GatewayConstant.PROP_KEY_CLIENT_REMOTE_PORT, 0);
@@ -83,15 +82,12 @@ public class PropertyServiceImpl implements PropertyService, BeanNameAware {
             GatewayConstant.CLIENT_INBOUND_CHANNEL = applicationContext.getBean("unionClientInboundChannel", QueueChannel.class);
             GatewayConstant.CLIENT_OUTBOUND_CHANNEL = applicationContext.getBean("unionClientOutboundChannel", MessageChannel.class);
 
-//            GatewayConstant.CLIENT_FACTORY.registerSender(new UnionClientTcpSender());
+            GatewayConstant.CLIENT_FACTORY.registerSender(new UnionClientTcpSender());
             GatewayConstant.CLIENT_FACTORY.setTcpSocketFactorySupport(new UnionTcpNetSocketFactorySupport());
             GatewayConstant.CLIENT_FACTORY.setTcpNetConnectionSupport(new UnionTcpNetClientConnectionSupport());
 
-
             GatewayConstant.CLIENT_INBOUND_CHANNEL_ADAPTER = applicationContext.getBean("unionClientInboundAdapter", TcpReceivingChannelAdapter.class);
             GatewayConstant.ERROR_CHANNEL = applicationContext.getBean("errorChannel", MessageChannel.class);
-
-
 
             if (ObjectUtils.anyNull(GatewayConstant.SERVER_FACTORY,
                     GatewayConstant.SERVER_INBOUND_CHANNEL,
@@ -117,8 +113,6 @@ public class PropertyServiceImpl implements PropertyService, BeanNameAware {
 
                 SystemLogger.info("The system uses the default mode Simplex mode");
             }
-
-
 
         } catch (Throwable e) {
             SystemLogger.error("Occurs a error {0} when init prop", new String[]{e.getMessage()}, e);

@@ -60,7 +60,7 @@ public class ExitSystemUtil {
                 GatewayConstant.CLIENT_FACTORY.getConnection().shutdownInput();
                 if(GatewayConstant.CLIENT_INBOUND_CHANNEL.getQueueSize() != 0 || GatewayConstant.SERVER_INBOUND_CHANNEL.getQueueSize() != 0){
                     SystemLogger.info("Client or Server channel have {0} Message, waiting 3 second to handle msg",GatewayConstant.CLIENT_INBOUND_CHANNEL.getQueueSize() + GatewayConstant.SERVER_INBOUND_CHANNEL.getQueueSize());
-                    waitTime.set(15000);
+                    waitTime.set(10000);
                 }else {
                     GatewayConstant.CLIENT_FACTORY.getConnection().shutdownOutput();
                 }

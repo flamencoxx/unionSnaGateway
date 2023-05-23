@@ -202,4 +202,15 @@
         </resources>
     </build>
 
+    <distributionManagement>
+        <repository>
+            <id>2</id>
+            <url>http://192.168.32.22/gitlab-instance-f6b2d35a/uniongateway.git</url>
+        </repository>
+<!--        <snapshotRepository>-->
+<!--            <id>remote-repo</id>-->
+<!--            <url>https://example.com/snapshot-repository</url>-->
+<!--        </snapshotRepository>-->
+    </distributionManagement>
+
 </project>

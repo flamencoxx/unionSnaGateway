@@ -24,12 +24,6 @@ public class UnionTcpNetSocketFactorySupport implements TcpSocketFactorySupport 
     public SocketFactory getSocketFactory() {
         synchronized (SocketFactory.class) {
             if (theFactory == null) {
-                //
-                // Different implementations of this method SHOULD
-                // work rather differently.  For example, driving
-                // this from a system property, or using a different
-                // implementation than JavaSoft's.
-                //
                 theFactory = new UnionGatewaySocketFactory();
             }
         }

@@ -1,6 +1,7 @@
 package com.iaspec.uniongatewaymock.unionGateway.client;
 
 import com.iaspec.uniongatewaymock.constant.GatewayConstant;
+import com.iaspec.uniongatewaymock.model.TimeNewCons;
 import com.iaspec.uniongatewaymock.serializer.ByteArraySerializer;
 import com.iaspec.uniongatewaymock.util.CpicUtil;
 import com.iaspec.uniongatewaymock.util.SystemLogger;
@@ -36,7 +37,8 @@ public class UnionMessageHandle {
             str = new String(data, StandardCharsets.US_ASCII);
         }
 
-
+        TimeNewCons timeCons = TimeNewCons.getInstance();
+        long timer = timeCons.acceptMsg(str);
 
         SystemLogger.info("Accept Msg form gateway2, msg={0}",str);
 //        GatewayConstant.CONNECTION_ID = (String) message.getHeaders().get(IpHeaders.CONNECTION_ID);

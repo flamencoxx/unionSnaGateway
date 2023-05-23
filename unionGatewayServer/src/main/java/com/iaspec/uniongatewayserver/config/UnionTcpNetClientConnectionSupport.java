@@ -6,11 +6,13 @@ import com.iaspec.uniongatewayserver.util.CommandUtils;
 import com.iaspec.uniongatewayserver.util.ExitSystemUtil;
 import com.iaspec.uniongatewayserver.util.SystemLogger;
 import com.iaspec.uniongatewayserver.util.ThreadUtil;
+import com.sun.istack.internal.NotNull;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.integration.ip.tcp.connection.AbstractTcpConnectionSupport;
 import org.springframework.integration.ip.tcp.connection.TcpNetConnection;
 import org.springframework.integration.ip.tcp.connection.TcpNetConnectionSupport;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 import java.io.IOException;
@@ -28,7 +30,7 @@ public class UnionTcpNetClientConnectionSupport extends AbstractTcpConnectionSup
     public static final String LOCALHOST = "127.0.0.1";
 
 
-    public TcpNetConnection createNewConnection(Socket socket, boolean server, boolean lookupHost, ApplicationEventPublisher applicationEventPublisher, String connectionFactoryName) {
+    public TcpNetConnection createNewConnection(@NonNull Socket socket, boolean server, boolean lookupHost, ApplicationEventPublisher applicationEventPublisher, @NonNull String connectionFactoryName) {
         Socket customSocket = null;
         Optional<Socket> socketOp = Optional.empty();
         InetAddress host;
@@ -78,16 +80,26 @@ public class UnionTcpNetClientConnectionSupport extends AbstractTcpConnectionSup
         }
     }
 
+    private void closeSocket(Socket socket){
+        try {
+            if (!socket.isClosed()) {
+                socket.close();
+            }
+        } catch (IOException e) {
+            SystemLogger.error("Occur a error when close Socket");
+        }
+    }
+
     private void handleClientException(ExceptionEnum exceptionEnum,boolean isShutdown,String errorType,String errorMsg,Throwable e) {
         SystemLogger.error("Occur {0} when create Socket Connection, e,message= {1}", new String[]{errorType,e.getMessage()}, e);
         if (StringUtils.isNotBlank(errorMsg)){
             SystemLogger.error(errorMsg);
         }
-        CommandUtils.runAbnormalShellWithFunc(exceptionEnum.getMsg(), s -> {
-            SystemLogger.error("Abnormal shell fail to run,error msg : {0}", s);
-            return null;
-        });
         if (isShutdown){
+            CommandUtils.runAbnormalShellWithFunc(exceptionEnum.getMsg(), s -> {
+                SystemLogger.error("Abnormal shell fail to run,error msg : {0}", s);
+                return null;
+            });
             ExitSystemUtil.exitSystem(exceptionEnum, exceptionEnum.getMsg());
         }
     }
@@ -111,8 +123,8 @@ public class UnionTcpNetClientConnectionSupport extends AbstractTcpConnectionSup
         if (sourceSocket.getTrafficClass() >= 0) {
             destSocket.setTrafficClass(sourceSocket.getTrafficClass());
         }
-
-
+//        自定义设置
+        destSocket.setReuseAddress(true);
     }
 
 
@@ -137,7 +149,6 @@ public class UnionTcpNetClientConnectionSupport extends AbstractTcpConnectionSup
         @Override
         protected InputStream inputStream() throws IOException {
             InputStream wrappedStream = super.inputStream();
-            // It shouldn't be possible for the wrapped stream to change but, just in case...
             if (this.pushbackStream == null || !wrappedStream.equals(this.wrapped)) {
                 this.pushbackStream = new PushbackInputStream(wrappedStream, this.pushbackBufferSize);
                 this.wrapped = wrappedStream;

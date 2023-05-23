@@ -7,6 +7,7 @@ import org.springframework.integration.ip.tcp.serializer.SoftEndOfStreamExceptio
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
@@ -87,11 +88,8 @@ public class UnionClientSerializer extends AbstractPooledBufferByteArraySerializ
             }
             return realMessageLength;
         } catch(NumberFormatException e) {
-            SystemLogger.error("Please enter the message length for the first four digits, don input error format");
+            SystemLogger.error("Please enter the message length for the first four digits, don't input error format");
             return 0;
-        }
-        catch (SoftEndOfStreamException e) {
-            throw e;
         } finally {
 //            SystemLogger.debugMethod(getClass(), "getBytes", false, new String[] {});
         }

@@ -44,16 +44,19 @@ public class UnionServerMessageHandle {
             new ThreadPoolExecutor.CallerRunsPolicy());
 
 //    ms
+//    队列最后的减去最先的时间 间隔 ms
     public static final int MORE_IDLE_MSG_TIME_LIMIT = 1200;
 
+//    于上一次处理空消息逻辑的间隔时间
     public static final int HANDLE_TIMER = 5000;
 
+//    队列长度
     private static final int IDLE_MAX_SIZE = 100;
 
-    //    second
+    //    最后一次处理大量空消息的时间
     private static long LAST_HANDLE_TIME = System.currentTimeMillis();
 
-
+//    存储空消息的时间戳
     public static ArrayBlockingQueue<Long> idleMsgTimeQueue = new ArrayBlockingQueue<>(IDLE_MAX_SIZE);
 
 
@@ -61,17 +64,13 @@ public class UnionServerMessageHandle {
         SystemLogger.debugMethod(getClass(), "handleServerMessage", (String) message.getHeaders()
                 .get(IpHeaders.CONNECTION_ID), new String[]{"message.Headers"}, message.getHeaders());
         try {
-            SystemLogger.debug("message.payload.length={0}", message.getPayload().length);
             byte[] data = message.getPayload();
+            String systemDestName = GatewayConstant.SYSTEM_DEST_NAME;
+            RecordUtil.umps2GatewayRecord();
+            String str;
             if (handleIdleMsg(data)){
                 return;
             }
-//            获取轮训类,通过choice方法不断轮训下一个
-            String systemDestName = GatewayConstant.SYSTEM_DEST_NAME;
-
-            RecordUtil.umps2GatewayRecord();
-
-            String str;
             if (GatewayConstant.IS_EBC_OR_ASCII) {
                 str = new String(CpicUtil.convertToAsc(data, data.length), StandardCharsets.US_ASCII);
             } else {
@@ -84,11 +83,12 @@ public class UnionServerMessageHandle {
             SystemLogger.trace("Thread Id: {" + "0}, Date : {1}, content: {2}", Thread.currentThread()
                     .getName(), date, StringUtils.substring(str, 0, 20));
 
+
 //            为了测试暂时注释，后续要打开
 //            cpicService.sendMessage2MainFrame(systemDestName,data);
             cpicService.sendMsgBack(str);
 
-//            throw new Exception("test");
+
         }  finally {
             SystemLogger.debugMethod(getClass(), "handleServerMessage", false, new String[]{"message.Headers"}, message.getHeaders());
         }
@@ -114,7 +114,7 @@ public class UnionServerMessageHandle {
                 SystemLogger.error("Traffic spikes for incoming Empty messages");
                 String executorName = Thread.currentThread().getName();
                 if(StringUtils.startsWith(executorName,GatewayConstant.ClIENT_EXECUTOR_NAME)){
-                    SystemLogger.error("Client executor is crazy");
+                    SystemLogger.error("Client executor accept more empty msg in show time");
                     GatewayConstant.CLIENT_FACTORY.getConnection().close();
                 } else if (StringUtils.startsWith(executorName, GatewayConstant.SERVER_EXECUTOR_NAME)) {
                     SystemLogger.error("Server executor is crazy");
