@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.integration.ip.IpHeaders;
 import org.springframework.messaging.Message;
 
+import javax.annotation.Resource;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -27,7 +28,7 @@ public class UnionServerMessageHandle {
 
 
 
-    @Autowired
+    @Resource
     private CpicService cpicService;
 
 
@@ -85,8 +86,8 @@ public class UnionServerMessageHandle {
 
 
 //            为了测试暂时注释，后续要打开
-//            cpicService.sendMessage2MainFrame(systemDestName,data);
-            cpicService.sendMsgBack(str);
+            cpicService.sendMessage2MainFrame(systemDestName,data);
+//            cpicService.sendMsgBack(str);
 
 
         }  finally {

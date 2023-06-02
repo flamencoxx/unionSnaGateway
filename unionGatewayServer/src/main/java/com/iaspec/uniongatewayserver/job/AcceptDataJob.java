@@ -45,7 +45,7 @@ public class AcceptDataJob implements ApplicationRunner {
         try {
 
 //            为了模拟测试环境暂时注释，后续需要打开
-//            cpicService.acceptMessageFromMainFrame();
+            cpicService.acceptMessageFromMainFrame();
 
 //            new Thread(() -> {
 //                ThreadUtil.sleep(10000);
