@@ -59,9 +59,9 @@ public class CpicServiceImpl implements CpicService {
             SystemLogger.info("CPIC init result: conversationId= {0}, systemDestName= {1}, CPICReturnCode= {2}", conversationId, systemDestName, cpicReturnCode.intValue());
             checkReturnCode(cpicReturnCode);
 
-            if (!GatewayConstant.IS_EBC_OR_ASCII) {
-                data = CpicUtil.convertToEbc(data, data.length);
-            }
+//            if (!GatewayConstant.IS_EBC_OR_ASCII) {
+//                data = CpicUtil.convertToEbc(data, data.length);
+//            }
 //        CPIC ALLOCATE
             cpic.cmallc(conversationId, cpicReturnCode);
             SystemLogger.info("CPIC allocate result: conversationId= {0}, systemDestName= {1}, CPICReturnCode= {2}", conversationId, systemDestName, cpicReturnCode.intValue());
@@ -131,11 +131,11 @@ public class CpicServiceImpl implements CpicService {
                     SystemLogger.info("buffer len is  {0}", getValidLength(dataBuffer));
                     byte[] result = new byte[receivedLength.intValue()];
                     System.arraycopy(dataBuffer, 0, result, 0, receivedLength.intValue());
-                    if (!GatewayConstant.IS_EBC_OR_ASCII) {
-                        result = CpicUtil.convertToAsc(result, result.length);
-                    }
+//                    if (!GatewayConstant.IS_EBC_OR_ASCII) {
+//                        result = CpicUtil.convertToAsc(result, result.length);
+//                    }
                     SystemLogger.info("Receive data returned from SNA, conversationId = {0}, requestLength = {1}, dataReceivedType = {2}, receivedLength = {3}, statusReceived = {4}, rtsReceived = {5}, cpicReturnCode = {6}, msgByteLen = {8}", new String(conversationId), requestLength.intValue(), dataReceivedType.toString(), receivedLength.intValue(), statusReceived.intValue(), rtsReceived.intValue(), cpicReturnCode.intValue(), getValidLength(result));
-                    String receivedStr = new String(CpicUtil.convertToAsc(result, result.length), StandardCharsets.US_ASCII);
+                    String receivedStr = new String(result, StandardCharsets.US_ASCII);
                     SystemLogger.trace("Receive data returned from SNA, conversationId = {0}, content = {1}",new String(conversationId),StringUtils.substring(receivedStr,0,20));
                     AcceptResult acceptResult = AcceptResult.builder()
                             .conversationId(new String(conversationId))
