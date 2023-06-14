@@ -139,9 +139,9 @@ public class GatewayConstant {
 
     // ======================================================================================
 
-    public static final String PROP_KEY_CLIENT_CONNECT_TIMEOUT = "client.Connect.timeout";
+    public static final String PROP_KEY_CLIENT_CONNECT_TIMEOUT = "client.connect.timeout";
 
-    public static final String PROP_KEY_MAX_RETIES = "maxReties";
+    public static final String PROP_KEY_MAX_RETIES = "maxRetries";
 
     public static final String PROP_KEY_RETRY_INTERVAL = "retryInterval";
     public static final String ClIENT_EXECUTOR_NAME = "clientExecutor";
