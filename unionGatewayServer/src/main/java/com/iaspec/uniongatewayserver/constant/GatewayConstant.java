@@ -127,12 +127,23 @@ public class GatewayConstant {
 
     public static final AtomicBoolean isDuplex = new AtomicBoolean(false);
 
+    public static int MAX_RETIES = 0;
+
+    public static long RETRY_INTERVAL = 5000L;
+
+    public static int CLIENT_CONNECT_TIMEOUT = 5000;
+
 
     public static final ListBalance<Function<byte[], Boolean>> SEND_FUNC = new ListBalance<>(Lists.newArrayList(CpicServiceImpl::client2UMPS,CpicServiceImpl::server2UMPS));
 
 
     // ======================================================================================
 
+    public static final String PROP_KEY_CLIENT_CONNECT_TIMEOUT = "client.Connect.timeout";
+
+    public static final String PROP_KEY_MAX_RETIES = "maxReties";
+
+    public static final String PROP_KEY_RETRY_INTERVAL = "retryInterval";
     public static final String ClIENT_EXECUTOR_NAME = "clientExecutor";
 
     public static final String SERVER_EXECUTOR_NAME = "serverExecutor";

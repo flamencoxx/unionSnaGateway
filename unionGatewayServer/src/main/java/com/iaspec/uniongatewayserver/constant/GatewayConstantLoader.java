@@ -46,6 +46,12 @@ public class GatewayConstantLoader {
 
             GatewayConstant.isDuplex.set(propertyService.getBooleanValue(GatewayConstant.PROP_KEY_IS_DUPLEX, false));
 
+            GatewayConstant.MAX_RETIES = propertyService.getIntegerValue(GatewayConstant.PROP_KEY_MAX_RETIES, 5);
+
+            GatewayConstant.RETRY_INTERVAL = 5000L;
+
+            GatewayConstant.CLIENT_CONNECT_TIMEOUT = propertyService.getIntegerValue(GatewayConstant.PROP_KEY_CLIENT_CONNECT_TIMEOUT, 5000);
+
 //            白名单
             if (StringUtils.isNotBlank(GatewayConstant.WHITE_LIST_STR)) {
                 String[] whiteListArray = GatewayConstant.WHITE_LIST_STR.split(",");

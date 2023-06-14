@@ -16,6 +16,7 @@ public class UnionClientTcpSender implements TcpSender {
         GatewayConstant.isClientConnect = true;
         GatewayConstant.CLIENT_OPEN_CONNECT_TIMES.getAndIncrement();
         GatewayConstant.CLIENT_CONNECTION_ID.set(con.getConnectionId());
+        UnionTcpNetClientConnectionSupport.retryCount.set(0);
         SystemLogger.info("UMPS  connect to Union Gateway Client, UMPS : {0} : {1} connect to Gateway: {2} : {3},  connectId : {4}",
                 con.getSocketInfo().getInetAddress().getHostAddress(),con.getSocketInfo().getPort(),
                 con.getSocketInfo().getLocalAddress(),
@@ -30,7 +31,7 @@ public class UnionClientTcpSender implements TcpSender {
             GatewayConstant.isClientConnect = false;
             GatewayConstant.CLIENT_CLOSE_CONNECT_TIMES.getAndIncrement();
             GatewayConstant.CLIENT_CONNECTION_ID.set(StringUtils.EMPTY);
-            GatewayConstant.CLIENT_FACTORY.getConnection().close();
+            UnionTcpNetClientConnectionSupport.retryCount.set(0);
             SystemLogger.info("UMPS and gateway Client disconnect, UMPS : {0} : {1} disconnect with Gateway: {2} : {3},  connectId : {4}",
                     con.getSocketInfo().getInetAddress().getHostAddress(),
                     con.getSocketInfo().getPort(),
