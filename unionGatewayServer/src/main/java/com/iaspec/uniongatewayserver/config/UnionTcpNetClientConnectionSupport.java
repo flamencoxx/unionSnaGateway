@@ -18,8 +18,12 @@ import org.springframework.lang.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
+import java.lang.reflect.Field;
 import java.net.*;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author Flamenco.xxx
@@ -28,6 +32,26 @@ import java.util.Optional;
 public class UnionTcpNetClientConnectionSupport extends AbstractTcpConnectionSupport implements TcpNetConnectionSupport {
 
     public static final String LOCALHOST = "127.0.0.1";
+
+    public static final ConcurrentHashMap<String, Object> socketInfo = new ConcurrentHashMap<>();
+
+    public static final String SO_TIMEOUT = "SoTimeout";
+
+    public static final String SEND_BUFFER_SIZE = "SendBufferSize";
+
+    public static final String RECEIVE_BUFFER_SIZE = "ReceiveBufferSize";
+
+    public static final String KEEPALIVE = "KeepAlive";
+
+    public static final String TCPNODELAY = "TcpNoDelay";
+
+    public static final String SO_LINGER = "SoLinger";
+
+    public static final String TRAFFIC_CLASS = "TrafficClass";
+
+    public static final String REUSE_ADDRESS = "ReuseAddress";
+
+    public static final AtomicInteger retryCount = new AtomicInteger(-1);
 
 
     public TcpNetConnection createNewConnection(@NonNull Socket socket, boolean server, boolean lookupHost, ApplicationEventPublisher applicationEventPublisher, @NonNull String connectionFactoryName) {
@@ -38,14 +62,21 @@ public class UnionTcpNetClientConnectionSupport extends AbstractTcpConnectionSup
         InetAddress localHost;
         int localPort = GatewayConstant.CLIENT_LOCAL_PORT;
         try {
+            checkConnectRetry();
             if (GatewayConstant.CLIENT_REMOTE_HOST.equals(LOCALHOST)) {
                 host = InetAddress.getLocalHost();
             } else {
                 host = InetAddress.getByName(GatewayConstant.CLIENT_REMOTE_HOST);
             }
             localHost = InetAddress.getLocalHost();
-            customSocket = new Socket(host, port, localHost, localPort);
+//            customSocket = new Socket(host, port, localHost, localPort);
+            customSocket = new Socket();
             settingsSocket(socket, customSocket);
+            getSocketInfo(socketInfo, customSocket);
+            customSocket.bind(new InetSocketAddress(localHost,localPort));
+            customSocket.connect(new InetSocketAddress(host,port),GatewayConstant.CLIENT_CONNECT_TIMEOUT);
+
+//            tryConnectAndRetry(customSocket, host, port, localHost, localPort);
             socketOp = Optional.of(customSocket);
         } catch (NullPointerException e) {
             SystemLogger.error("Occurs error when create Socket, socket Object is null", new String[]{StringUtils.EMPTY}, new Throwable("socket Object is null"));
@@ -57,11 +88,11 @@ public class UnionTcpNetClientConnectionSupport extends AbstractTcpConnectionSup
 //            本地端口或对方server端口绑定失败关闭系统
             handleClientException(ExceptionEnum.BIND_EXCEPTION, true, e.getClass().getName(), e.getMessage(), e);
         } catch (ConnectException e) {
-            handleClientException(ExceptionEnum.SOCKET_CONNECT_EXCEPTION,true,e.getClass().getName(),e.getMessage(),e);
+            handleClientException(ExceptionEnum.SOCKET_CONNECT_EXCEPTION,false,e.getClass().getName(),e.getMessage(),e);
         } catch (SocketTimeoutException e) {
             handleClientException(ExceptionEnum.SOCKET_CONNECT_TIMEOUT,false,e.getClass().getName(),e.getMessage(),e);
         } catch (SocketException e) {
-            handleClientException(ExceptionEnum.SOCKET_EXCEPTION, true, e.getClass().getName(), e.getMessage(), e);
+            handleClientException(ExceptionEnum.SOCKET_EXCEPTION, false, e.getClass().getName(), e.getMessage(), e);
         } catch (IOException e) {
             SystemLogger.error("Occur error(IOException) when create Socket Connection, e,message= {0}", new String[]{e.getMessage()}, e);
             throw new RuntimeException(e);
@@ -73,12 +104,63 @@ public class UnionTcpNetClientConnectionSupport extends AbstractTcpConnectionSup
         } else {
             return socketOp.map(value -> new TcpNetConnection(value, server, lookupHost, applicationEventPublisher, connectionFactoryName))
                     .orElseGet(() -> {
-                        handleClientException(ExceptionEnum.CREAT_TCP_CONNECTION_EXCEPTION, true, "CreatSocketFailure", "Creat TcpNetConnection failure,Socket params is Empty,Prepare to close system", new Throwable());
+                        handleClientException(ExceptionEnum.CREAT_TCP_CONNECTION_EXCEPTION, false, "CreatSocketFailure", "create TcpNetConnection failure", new Throwable());
                         return null;
                     });
 
         }
     }
+
+    private void tryConnectAndRetry(Socket socket,InetAddress remoteHost,int remotePort,InetAddress localHost,int localPort) throws IOException {
+        socket.bind(new InetSocketAddress(localHost,localPort));
+        AtomicBoolean connected = new AtomicBoolean(false);
+        AtomicInteger retryCount = new AtomicInteger(-1);
+
+        while (!connected.get() && retryCount.incrementAndGet() < GatewayConstant.MAX_RETIES) {
+            try {
+//                SystemLogger.error("test socketTimeOut : {0},retryCount : {1},reUseAddress : {2}",socket.getSoTimeout(),retryCount.get(),socket.getReuseAddress());
+                socket.connect(new InetSocketAddress(remoteHost,remotePort),GatewayConstant.CLIENT_CONNECT_TIMEOUT);
+                connected.set(true);
+            } catch (SocketTimeoutException e) {
+                SystemLogger.error("Client connect timeout,connect retry {0} times",retryCount.get(),e);
+                ThreadUtil.sleep(GatewayConstant.RETRY_INTERVAL);
+                connected.set(false);
+            } catch (ConnectException e){
+                SystemLogger.error("Client connect exception,connect retry {0} times",retryCount.get(),e);
+                ThreadUtil.sleep(GatewayConstant.RETRY_INTERVAL);
+                connected.set(false);
+            } catch (SocketException e){
+                SystemLogger.error("SocketException,connect retry {0} times, msg : {1}",retryCount.get(),e.getMessage(),e);
+                ThreadUtil.sleep(GatewayConstant.RETRY_INTERVAL);
+                try {
+                    if(socket.isClosed()){
+                        socket.close();
+                        socket = new Socket();
+                        setSocketInfo(socketInfo,socket);
+                        socket.bind(new InetSocketAddress(localHost,localPort));
+                        socket.connect(new InetSocketAddress(remoteHost,remotePort),GatewayConstant.CLIENT_CONNECT_TIMEOUT);
+                        SystemLogger.info("new socket,isConnect : {0}",socket.isConnected());
+                    }
+                } catch (Exception ex) {
+                    SystemLogger.error("Occur a error when retry connect and create new socket");
+                }
+                connected.set(false);
+            }
+        }
+
+        if (!connected.get()) {
+            SystemLogger.error("Client retry connection exceeds maximum limit,connect retry {0} times",retryCount.get());
+            handleClientException(ExceptionEnum.RETRY_CONNECT_OVER_LIMIT,true,"retryConnectFail",null,new Throwable());
+        }
+    }
+
+    private void checkConnectRetry(){
+        SystemLogger.info("client try connect {0} times",retryCount.incrementAndGet());
+        if(retryCount.get() > GatewayConstant.MAX_RETIES){
+            handleClientException(ExceptionEnum.RETRY_CONNECT_OVER_LIMIT,true,"retryConnectFail",null,new Throwable());
+        }
+    }
+
 
     private void closeSocket(Socket socket){
         try {
@@ -90,6 +172,27 @@ public class UnionTcpNetClientConnectionSupport extends AbstractTcpConnectionSup
         }
     }
 
+    public void getSocketInfo(ConcurrentHashMap<String,Object> map, Socket socket) throws SocketException {
+        map.put(SO_TIMEOUT, socket.getSoTimeout());
+        map.put(SEND_BUFFER_SIZE, socket.getSendBufferSize());
+        map.put(RECEIVE_BUFFER_SIZE, socket.getReceiveBufferSize());
+        map.put(KEEPALIVE, socket.getKeepAlive());
+        map.put(TCPNODELAY, socket.getTcpNoDelay());
+        map.put(SO_LINGER, socket.getSoLinger());
+        map.put(TRAFFIC_CLASS, socket.getTrafficClass());
+        map.put(REUSE_ADDRESS, socket.getReuseAddress());
+    }
+
+    public void setSocketInfo(ConcurrentHashMap<String,Object> map, Socket socket) throws SocketException {
+        socket.setSoTimeout((Integer) map.get(SO_TIMEOUT));
+        socket.setSendBufferSize((Integer) map.get(SEND_BUFFER_SIZE));
+        socket.setReceiveBufferSize((Integer) map.get(RECEIVE_BUFFER_SIZE));
+        socket.setKeepAlive((Boolean) map.get(KEEPALIVE));
+        socket.setTcpNoDelay((Boolean) map.get(TCPNODELAY));
+        socket.setSoLinger(true, (Integer) map.get(SO_LINGER));
+        socket.setTrafficClass((Integer) map.get(TRAFFIC_CLASS));
+        socket.setReuseAddress((Boolean) map.get(REUSE_ADDRESS));
+    }
     private void handleClientException(ExceptionEnum exceptionEnum,boolean isShutdown,String errorType,String errorMsg,Throwable e) {
         SystemLogger.error("Occur {0} when create Socket Connection, e,message= {1}", new String[]{errorType,e.getMessage()}, e);
         if (StringUtils.isNotBlank(errorMsg)){

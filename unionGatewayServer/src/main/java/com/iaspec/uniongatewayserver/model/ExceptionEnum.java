@@ -24,7 +24,9 @@ public enum ExceptionEnum {
 
     SYSTEM_NAME_EMPTY("Missing key parameters system dest name,please check"),
 
-    WHITE_LIST_EMPTY("Missing key parameters white list,please check")
+    WHITE_LIST_EMPTY("Missing key parameters white list,please check"),
+
+    RETRY_CONNECT_OVER_LIMIT("Client retry connection exceeds maximum limit,ready to shutdown server")
     ;
 
     private final String Msg;

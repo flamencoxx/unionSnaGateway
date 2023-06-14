@@ -33,14 +33,14 @@
         <property name="soKeepAlive" value="true"/>
         <property name="connectTimeout" value="5000"/>
     </bean>
-
+    
 
 
     <int-ip:tcp-outbound-channel-adapter
             id="unionClientOutboundAdapter"
             channel="unionClientOutboundChannel"
             client-mode="true"
-            retry-interval="10000"
+            retry-interval="5000"
             connection-factory="unionClientFactory"/>
 
 

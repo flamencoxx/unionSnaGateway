@@ -2,6 +2,7 @@ package com.iaspec.uniongatewayserver.unionHandle;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.iaspec.uniongatewayserver.constant.GatewayConstant;
+import com.iaspec.uniongatewayserver.job.MonitorMsgJob;
 import com.iaspec.uniongatewayserver.service.CpicService;
 import com.iaspec.uniongatewayserver.util.CpicUtil;
 import com.iaspec.uniongatewayserver.util.RecordUtil;
@@ -68,6 +69,7 @@ public class UnionServerMessageHandle {
             String systemDestName = GatewayConstant.SYSTEM_DEST_NAME;
             RecordUtil.umps2GatewayRecord();
             String str;
+            MonitorMsgJob.currentMsgCount.incrementAndGet();
             if (handleIdleMsg(data)){
                 return;
             }
